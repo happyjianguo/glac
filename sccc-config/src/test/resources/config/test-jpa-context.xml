@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+
+	<!-- 这里定义JPA相关配置。总体上来说，这里使用以Hibernate为Provider的JPA2.0方案，使用Spring来进行集成，不依赖于容器的JPA实现。 -->
+	<!-- 使用内存H2数据库作为数据源，数据库名为mem:memdb,用户名sa，无密码，可以使用jdbc:h2:localhost:mem:memdb;LOCK_MODE=0来连接。LOCK_MODE=0为指定脏读 -->
+	<!-- 这里使用自定义Configurer而不是使用<jdbc:embedded-database/>，目的是为了加上MVCC=true参数，不然H2会用锁表来代替，造成一堆锁表问题，以及锁表造成的暴露不出的问题 -->
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactoryBean">
+		<property name="databaseName" value="memdb" />
+		<property name="databaseConfigurer">
+			<bean class="net.engining.pg.support.utils.H2MvccConfigurer" />
+		</property>
+	</bean>
+	
+	<bean id="h2tcp" class="org.h2.tools.Server" factory-method="createTcpServer"
+		init-method="start" destroy-method="stop">
+		<constructor-arg value="-tcp,-tcpAllowOthers,-tcpPort,9092" />
+	</bean>
+
+	<bean class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+
+	<bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<description>
+			定义EntityManagerFactory，用于Spring控制事务。
+			具体的Hibernate配置在persistence.xml中控制，包括JPA Provider和Hibernate的各种参数（不含组件扫描)。
+			为了避免在JavaEE容器使用默认的persistence.xml进行自动配置JPA，这里额外指定了文件名。
+		</description>
+		
+		<property name="dataSource" ref="dataSource" />
+		
+		<property name="persistenceUnitName" value="default" />
+		
+		<property name="packagesToScan">
+			<list>
+				<!-- <value>net.engining.pg.batch.sdk.meta</value>
+				<value>net.engining.pg.parameter.entity.model</value>
+				<value>net.engining.profile.entity.model</value>
+				<value>net.engining.pcx.ci.entity.model</value>
+				<value>net.engining.smartstar.entity.model</value> -->
+				<value>net.engining.smartstar.config.test.entity</value>
+			</list>
+		</property>
+		
+		<property name="persistenceProvider">
+			<bean class="org.hibernate.jpa.HibernatePersistenceProvider"/>
+		</property>
+		
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="generateDdl" value="false" />
+				<property name="database" value="H2"/>
+				<property name="showSql" value="true" />
+			</bean>
+		</property>
+		
+		<property name="jpaDialect">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect"/>
+		</property>
+		
+		<property name="jpaPropertyMap">
+			<map>
+<!-- 				none 	不做任何处理 -->
+<!-- 				validate          加载hibernate时，验证创建数据库表结构 -->
+<!-- 				create            每次加载hibernate，重新创建数据库表结构，这就是导致数据库表数据丢失的原因。 -->
+<!-- 				create-drop       加载hibernate时创建，退出是删除表结构 -->
+<!-- 				update            加载hibernate自动更新数据库结构 -->
+				<entry key="hibernate.hbm2ddl.auto" value="create" />
+				<entry key="hibernate.format_sql" value="true" />
+			</map>
+		</property>
+		
+	</bean>
+
+	<!-- 事务设置 -->
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="emf" />
+	</bean>
+	
+	<!-- 事务使用AspectJ进行编译时Weave -->
+	<tx:annotation-driven mode="aspectj" transaction-manager="transactionManager" />
+	
+</beans>

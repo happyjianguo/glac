@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+
+	<batch:flow id="sccc-1101-OnlineReconciliation">
+		<!-- 从表内读取数据按记录入账 -->
+		<batch:step id="stepSccc1101T02" next="stepSccc1101T03">
+			<batch:partition partitioner="sccc1101R01" aggregator="remoteStepExecutionAggregator">
+				<batch:handler grid-size="100" task-executor="sccc1101Executor" />
+				<batch:step>
+					<batch:tasklet>
+						<batch:chunk reader="sccc1101R01" chunk-completion-policy="simpleCompletionPolicy">
+							<batch:processor>
+								<bean class="org.springframework.batch.item.support.CompositeItemProcessor">
+									<property name="delegates">
+										<list>
+											<ref bean="sccc1101P02OnlineReconciliation" /> <!-- 流水对账，补记流水入差错表和当日入账交易表cacttxnpost -->
+											<ref bean="sccc1101P03LimitHandle" /> <!-- 额度处理 -->
+											<ref bean="sccc1101P04LoanAccountHandle" /> <!-- 贷款发放记账 -->
+											<ref bean="sccc1101P05RefundsHandle" /> <!-- 退款记账 -->
+											<ref bean="sccc1101P06CostCollectHandle" /> <!-- 费用收取记账 -->
+											<ref bean="sccc1101P07RepaymentHandle" /> <!-- 还款记账 -->
+											<ref bean="sccc1101P08UpdateCactTxnPost" /> <!--更新cacttxnpost对账状态 -->
+											<!-- <ref bean="sccc1101P09UpdateApGlTxn" /> -->
+										</list>
+									</property>
+								</bean>
+							</batch:processor>
+							<batch:writer>
+								<bean class="net.engining.pg.batch.sdk.NullItemWriter" />
+							</batch:writer>
+						</batch:chunk>
+					</batch:tasklet>
+					<batch:listeners>
+						<batch:listener ref="batchStepLoggedListener" />
+					</batch:listeners>
+				</batch:step>
+			</batch:partition>
+		</batch:step>
+
+		<!-- 检查状态不明的 -->
+		<batch:step id="stepSccc1101T03" next="stepSccc1101T04">
+			<batch:tasklet>
+				<batch:chunk reader="sccc1101R02" processor="sccc1101P09OnlineUntreated" chunk-completion-policy="simpleCompletionPolicy">
+					<batch:writer>
+						<bean class="net.engining.pg.batch.sdk.NullItemWriter" />
+					</batch:writer>
+				</batch:chunk>
+			</batch:tasklet>
+			<batch:listeners>
+				<batch:listener ref="batchStepLoggedListener" />
+			</batch:listeners>
+		</batch:step>
+
+		<batch:step id="stepSccc1101T04">
+			<batch:tasklet>
+				<batch:chunk reader="sccc1101R03" processor="sccc1101P10OnlineSUB" chunk-completion-policy="simpleCompletionPolicy">
+					<batch:writer>
+						<bean class="net.engining.pg.batch.sdk.NullItemWriter" />
+					</batch:writer>
+				</batch:chunk>
+			</batch:tasklet>
+			<batch:listeners>
+				<batch:listener ref="batchStepLoggedListener" />
+			</batch:listeners>
+		</batch:step>
+	</batch:flow>
+
+</beans>
+	

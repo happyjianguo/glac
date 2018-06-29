@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+
+	<!-- 批量直接记账文件; 更新检查项状态 -->
+<!-- 	<batch:flow id="sccc-0901-DirectPostLedger"> -->
+<!-- 		<batch:split id="splitFlowSccc0901" task-executor="sccc0901Executor"> -->
+			<!-- 中银渠道记账 -->
+			<batch:flow id="sccc-0901-DirectPostLedger">
+				<batch:step id="stepSccc0901T01" next="stepSccc0901T02">
+					<batch:tasklet>
+						<bean class="net.engining.sccc.batch.infrastructure.MultiFilesOkCheckTasklet" scope="step">
+							<property name="okResourcePattern" ref="zyLedgerOkFileResource" />
+							<property name="dataResourcePattern" ref="zyLedgerDatFileResource" />
+							<property name="inspectionCd" value="ZYAcct" />
+						</bean>
+					</batch:tasklet>
+					<batch:listeners>
+						<batch:listener ref="batchStepLoggedListener" />
+					</batch:listeners>
+				</batch:step>
+				<batch:step id="stepSccc0901T02" next="stepSccc0901T03">
+					<batch:tasklet>
+						<batch:chunk processor="sccc0901P01ZyDataImport" chunk-completion-policy="simpleCompletionPolicy">
+							<batch:reader>
+								<bean class="net.engining.sccc.batch.infrastructure.ExtMultiResourceItemReader">
+									<property name="inspectionCd" value="ZYAcct" />
+									<!-- <property name="resources" ref="zyLedgerDatFileResource" /> -->
+									<property name="locationPattern" value="sc_accounting_S0000005_*.dat" />
+									<property name="flatFileItemReader" ref="zyExtFlatFileItemReader" />
+									<property name="headerLinesCallback">
+										<bean class="net.engining.sccc.batch.infrastructure.FileHeaderLineCallbackHandler">
+											<property name="headerLineNumber" value="1" />
+											<property name="headerType" value="SimpleInteger" />
+										</bean>
+									</property>
+								</bean>
+							</batch:reader>
+							<batch:writer>
+								<bean class="net.engining.pg.batch.sdk.NullItemWriter" />
+							</batch:writer>
+						</batch:chunk>
+					</batch:tasklet>
+					<batch:listeners>
+						<batch:listener ref="batchStepFlatFileErroredListener" />
+						<batch:listener ref="batchStepLoggedListener" />
+					</batch:listeners>
+				</batch:step>
+				<!-- 从表内读取数据按记录入账 -->
+				<batch:step id="stepSccc0901T03" next="stepSccc0901T80">
+					<batch:partition partitioner="sccc0901R01Zy" aggregator="remoteStepExecutionAggregator">
+						<batch:handler grid-size="100" task-executor="sccc0901Executor" />
+						<batch:step>
+							<batch:tasklet>
+								<batch:chunk reader="sccc0901R01Zy" processor="sccc0901P05ZyPostLedger" chunk-completion-policy="simpleCompletionPolicy">
+									<batch:writer>
+										<bean class="net.engining.pg.batch.sdk.NullItemWriter" />
+									</batch:writer>
+								</batch:chunk>
+							</batch:tasklet>
+						</batch:step>
+					</batch:partition>
+					<batch:listeners>
+						<batch:listener>
+							<bean class="net.engining.pg.batch.sdk.DebugSupportListener" />
+						</batch:listener>
+					</batch:listeners>
+				</batch:step>
+				<!--增加mv文件到backup step -->
+				<batch:step id="stepSccc0901T80" next="stepSccc0901T90">
+					<batch:tasklet>
+						<bean class="net.engining.sccc.batch.infrastructure.FileOperateTasklet" scope="step">
+							<!-- <property name="fileOperateActions" ref="zyLedgerFileOperateActions" /> -->
+							<property name="locationPattern" value="sc_accounting_S0000005_*" />
+							<property name="inspectionCd" value="ZYAcct" />
+						</bean>
+					</batch:tasklet>
+					<batch:listeners>
+						<batch:listener ref="batchStepLoggedListener" />
+					</batch:listeners>
+				</batch:step>
+				<batch:step id="stepSccc0901T90">
+					<batch:tasklet ref="sccc0901T03ZyUpdateCheckList" />
+				</batch:step>
+			</batch:flow>
+			<!-- 拿去花渠道记账 -->
+<!-- 			<batch:flow> -->
+<!-- 				<batch:step id="stepSccc0901T04" next="stepSccc0901T05"> -->
+<!-- 					<batch:tasklet> -->
+<!-- 						<bean class="net.engining.sccc.batch.infrastructure.MultiFilesOkCheckTasklet" scope="step"> -->
+<!-- 							<property name="okResourcePattern" ref="nqhLedgerOkFileResource" /> -->
+<!-- 							<property name="dataResourcePattern" ref="nqhLedgerDatFileResource" /> -->
+<!-- 							<property name="inspectionCd" value="NQHAcct" /> -->
+<!-- 						</bean> -->
+<!-- 					</batch:tasklet> -->
+<!-- 					<batch:listeners> -->
+<!-- 						<batch:listener ref="batchStepLoggedListener" /> -->
+<!-- 					</batch:listeners> -->
+<!-- 				</batch:step> -->
+<!-- 				<batch:step id="stepSccc0901T05" next="stepSccc0901T06"> -->
+<!-- 					<batch:tasklet> -->
+<!-- 						<batch:chunk processor="sccc0901P02NqhDataImport" chunk-completion-policy="simpleCompletionPolicy"> -->
+<!-- 							<batch:reader> -->
+<!-- 								<bean class="net.engining.sccc.batch.infrastructure.ExtMultiResourceItemReader"> -->
+<!-- 									<property name="inspectionCd" value="NQHAcct" /> -->
+<!-- 									<property name="resources" ref="nqhLedgerDatFileResource" /> -->
+<!-- 									<property name="locationPattern" value="sc_accounting_S0000006_*.dat" /> -->
+<!-- 									<property name="flatFileItemReader" ref="nqhExtFlatFileItemReader" /> -->
+<!-- 									<property name="headerLinesCallback"> -->
+<!-- 										<bean class="net.engining.sccc.batch.infrastructure.FileHeaderLineCallbackHandler"> -->
+<!-- 											<property name="headerLineNumber" value="1" /> -->
+<!-- 											<property name="headerType" value="SimpleInteger" /> -->
+<!-- 										</bean> -->
+<!-- 									</property> -->
+<!-- 								</bean> -->
+<!-- 							</batch:reader> -->
+<!-- 							<batch:writer> -->
+<!-- 								<bean class="net.engining.pg.batch.sdk.NullItemWriter" /> -->
+<!-- 							</batch:writer> -->
+<!-- 						</batch:chunk> -->
+<!-- 					</batch:tasklet> -->
+<!-- 					<batch:listeners> -->
+<!-- 						<batch:listener ref="batchStepFlatFileErroredListener" /> -->
+<!-- 						<batch:listener ref="batchStepLoggedListener" /> -->
+<!-- 					</batch:listeners> -->
+<!-- 				</batch:step> -->
+<!-- 				从表内读取数据按记录入账 -->
+<!-- 				<batch:step id="stepSccc0901T06" next="stepSccc0901T81"> -->
+<!-- 					<batch:partition partitioner="sccc0901R02Nqh" aggregator="remoteStepExecutionAggregator"> -->
+<!-- 						<batch:handler grid-size="100" task-executor="sccc0901Executor" /> -->
+<!-- 						<batch:step> -->
+<!-- 							<batch:tasklet> -->
+<!-- 								<batch:chunk reader="sccc0901R02Nqh" processor="sccc0901P06NqhPostLedger" chunk-completion-policy="simpleCompletionPolicy"> -->
+<!-- 									<batch:writer> -->
+<!-- 										<bean class="net.engining.pg.batch.sdk.NullItemWriter" /> -->
+<!-- 									</batch:writer> -->
+<!-- 								</batch:chunk> -->
+<!-- 							</batch:tasklet> -->
+<!-- 						</batch:step> -->
+<!-- 					</batch:partition> -->
+<!-- 					<batch:listeners> -->
+<!-- 						<batch:listener> -->
+<!-- 							<bean class="net.engining.pg.batch.sdk.DebugSupportListener" /> -->
+<!-- 						</batch:listener> -->
+<!-- 					</batch:listeners> -->
+<!-- 				</batch:step> -->
+<!-- 				增加mv文件到backup step -->
+<!-- 				<batch:step id="stepSccc0901T81" next="stepSccc0901T91"> -->
+<!-- 					<batch:tasklet> -->
+<!-- 						<bean class="net.engining.sccc.batch.infrastructure.FileOperateTasklet" scope="step"> -->
+<!-- 							<property name="fileOperateActions" ref="nqhLedgerFileOperateActions" /> -->
+<!-- 							<property name="locationPattern" value="sc_accounting_S0000006_*" /> -->
+<!-- 							<property name="inspectionCd" value="NQHAcct" /> -->
+<!-- 						</bean> -->
+<!-- 					</batch:tasklet> -->
+<!-- 					<batch:listeners> -->
+<!-- 						<batch:listener ref="batchStepLoggedListener" /> -->
+<!-- 					</batch:listeners> -->
+<!-- 				</batch:step> -->
+<!-- 				<batch:step id="stepSccc0901T91"> -->
+<!-- 					<batch:tasklet ref="sccc0901T04NqhUpdateCheckList" /> -->
+<!-- 				</batch:step> -->
+<!-- 			</batch:flow> -->
+<!-- 		</batch:split> -->
+<!-- 	</batch:flow> -->
+
+	<bean id="nqhExtFlatFileItemReader" class="net.engining.sccc.batch.infrastructure.ExtFlatFileItemReader">
+		<property name="inspectionCd" value="NQHAcct" />
+		<property name="strict" value="false" />
+		<property name="linesToSkip" value="2" />
+		<property name="encoding" value="UTF-8" />
+		<property name="lineMapper">
+			<bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+				<property name="lineTokenizer">
+					<bean class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
+						<property name="delimiter" value="@!@" />
+						<property name="names">
+							<array>
+								<value>postCode</value>
+								<value>postAmt</value>
+								<value>clearDate</value>
+								<value>prodId</value>
+								<value>channeId</value>
+							</array>
+						</property>
+					</bean>
+				</property>
+				<property name="fieldSetMapper">
+					<bean class="net.engining.sccc.batch.sccc0901.bean.DirectPostLedgerFileFieldSetMapper" />
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="zyExtFlatFileItemReader" class="net.engining.sccc.batch.infrastructure.ExtFlatFileItemReader">
+		<property name="inspectionCd" value="ZYAcct" />
+		<property name="strict" value="false" />
+		<property name="linesToSkip" value="2" />
+		<property name="encoding" value="UTF-8" />
+		<property name="lineMapper">
+			<bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+				<property name="lineTokenizer">
+					<bean class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
+						<property name="delimiter" value="@!@" />
+						<property name="names">
+							<array>
+								<value>postCode</value>
+								<value>postAmt</value>
+								<value>clearDate</value>
+								<value>prodId</value>
+								<value>channeId</value>
+							</array>
+						</property>
+					</bean>
+				</property>
+				<property name="fieldSetMapper">
+					<bean class="net.engining.sccc.batch.sccc0901.bean.DirectPostLedgerFileFieldSetMapper" />
+				</property>
+			</bean>
+		</property>
+	</bean>
+</beans>

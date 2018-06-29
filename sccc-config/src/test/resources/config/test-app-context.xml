@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans default-lazy-init="false"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	<!-- 全局容器配置，这里写全局配置以及引入其它专项配置 -->
+	
+	<!--方法级 校验器；需要在类上加@Validated-->
+	<bean class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor">
+		<!-- 可以引用自己的 validator 配置，如果不指定则系统使用默认的 -->
+    	<property name="validator" ref="validator"/>
+	</bean>
+	
+	<!-- Bean 校验器；只针对本地Bean -->
+	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+       <property name="providerClass" value="org.hibernate.validator.HibernateValidator"/>  
+       <!-- 如果不加默认到 使用classpath下的 ValidationMessages.properties -->
+       <property name="validationMessageSource" ref="messageSource"/>
+   </bean>
+	
+	<!-- 国际化配置 -->
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">  
+	    <property name="basenames">  
+	        <list>
+	            <value>classpath:i18n/messages</value>
+	            <value>classpath:i18n/securityMessages</value>
+	            <value>classpath:org/hibernate/validator/ValidationMessages</value>
+	        </list>  
+	    </property>  
+	    <property name="useCodeAsDefaultMessage" value="true"/>
+	    <property name="defaultEncoding" value="UTF-8"/>
+	    <property name="cacheSeconds" value="60"/>
+	</bean>
+	
+</beans>

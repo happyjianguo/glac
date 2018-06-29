@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+
+	<batch:flow id="sccc-5401-DailyUpdateApGlBalance">
+		<batch:step id="sccc5401T01">
+			 <batch:tasklet>
+				<batch:chunk reader="sccc5401R" processor="sccc5401UpdateApGlBalance" chunk-completion-policy="simpleCompletionPolicy">
+					<batch:writer>
+						 <bean class="net.engining.pg.batch.sdk.NullItemWriter" />
+					</batch:writer>
+				</batch:chunk>
+			</batch:tasklet>
+			<batch:listeners>
+				<batch:listener ref="batchStepLoggedListener"/>
+			</batch:listeners>
+		</batch:step>
+	</batch:flow>
+
+</beans>

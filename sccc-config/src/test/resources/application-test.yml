@@ -1,0 +1,10 @@
+sccc:
+  common:
+    expireDuration: 5
+    expireTimeUnit: SECONDS
+    
+pg:
+  snowflake:
+    workerId: 1
+    dataCenterId: 1
+    

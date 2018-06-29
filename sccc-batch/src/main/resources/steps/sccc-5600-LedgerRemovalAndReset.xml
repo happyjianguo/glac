@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+
+	<batch:flow id="sccc-5600-LedgerRemovalAndReset">
+		<batch:step id="stepSccc5600T01" next="stepSccc5600T02">
+			<batch:tasklet ref="sccc5600T01RemovalApGlBalHst" />
+			<batch:listeners>
+				<batch:listener ref="batchStepLoggedListener" />
+			</batch:listeners>
+		</batch:step>
+		<batch:step id="stepSccc5600T02">
+			<batch:tasklet>
+				<batch:chunk reader="sccc5600R60ApGlBal" processor="sccc5600P60LedgerDailyRest" chunk-completion-policy="simpleCompletionPolicy">
+					<batch:writer>
+						<bean class="net.engining.pg.batch.sdk.NullItemWriter" />
+					</batch:writer>
+				</batch:chunk>
+			</batch:tasklet>
+			<batch:listeners>
+				<batch:listener ref="batchStepLoggedListener" />
+			</batch:listeners>
+		</batch:step>
+	</batch:flow>
+</beans>

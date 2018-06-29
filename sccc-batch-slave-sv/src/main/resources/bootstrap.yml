@@ -1,0 +1,130 @@
+#针对管理API的安全控制
+security:
+  basic:
+    enabled: true
+    #针对/admin路径进行认证
+    path: 
+    - /admin
+  #认证使用的用户名
+  user:
+    name: scccAdmin
+    password: scccP@55w0rd
+    role:
+    - ACTUATOR_MONITOR
+
+#管理API相关配置
+management:
+  #actuator暴露接口的前缀
+  context-path: /admin
+  #actuator是否需要安全保证
+  security:
+    enabled: true
+    roles:
+    - ACTUATOR_MONITOR
+
+endpoints:
+  shutdown:
+    enabled: true
+    sensitive: false
+  metrics:
+    #actuator的metrics接口是否需要安全保证
+    sensitive: false
+    enabled: true
+  health:
+    #actuator的health接口是否需要安全保证
+    sensitive: false
+    enabled: true
+
+sccc:
+  common:
+    expireDuration: 60
+    expireTimeUnit: SECONDS
+    defaultOrgId: "00001"
+    scheduled-thread-pool: 10
+  batch:
+    default-commit-interval: 500
+    default-grid-size: 100
+    default-poll-mills: 5000
+    default-executor-size: 20
+    end-of-day-schedule: "59/10 24 13 * * ?"
+    prev4-e-o-d-schedule: 60000
+    generate-report-file-schedule: 60000
+    default-batch-input-dir: ./inputfiles/
+    default-batch-output-dir: ./outputfiles/
+    default-backup-input-dir: ./backupfiles/
+    enable-remote-partition: true
+
+spring:
+  application:
+    name: sccc-batch-slave-sv
+#  zipkin: #指定zipkin server
+#    base-url: http://localhost:7900
+#  cloud:
+#    config:
+#      label: master
+#      discovery:
+#        enabled: true # 默认false，设为true表示使用注册中心中的configserver配置而不自己配置configserver的uri
+#        service-id: config-server # 指定config server在服务发现中的serviceId，默认为：configserver
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  jpa:
+    hibernate:
+      naming:
+        #配置SQL生成命名策略，不用spring默认的会转为小写；配置为保持原命名方式
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+    database: MYSQL
+    properties:
+      hibernate.format_sql: true
+      pg.snowflake.workerId: 1
+      pg.snowflake.dataCenterId: 1
+  batch:
+    initializer:
+      #是否初始化Spring Batch的数据库
+      enabled: false
+    job:
+      #是否自动执行定义的job    
+      enabled: false
+  rabbitmq:
+    host: 192.168.10.131
+    port: 5672
+    username: loan
+    password: loan123
+    virtual-host: sccc
+    publisher-confirms: true
+    listener:
+      auto-startup: false
+      prefetch: 1
+      concurrency: 2
+    cache:
+      channel:
+        size: 100
+        checkout-timeout: 1000
+      connection:
+        mode: channel
+    #RabbitTemplate sendAndReceive() 超时毫秒数
+    template:
+      reply-timeout: 30000
+      
+# IDEA虽然找不到对应的类，但是基于Feign的开发必须加上
+feign:
+  hystrix:
+    enabled: true
+          
+eureka:
+  instance:
+    metadata-map: #向Eureka服务提交元数据，这里是为了监控服务可以获取访问权限
+      user.name: ${security.user.name}
+      user.password: ${security.user.password}
+      management.port:  ${management.port}
+      management.context-path: ${management.context-path}
+  client: #当eureka为高可用服务之后，服务提供者、服务消费者的注册也不能再是一个节点上，要同时注册到所有的注册中心之上
+    service-url:
+      defaultZone:   http://eureka1:7070/eureka/
+#      ,http://eureka2:7071/eureka/,http://eureka3:7072/eureka/
+      #http://10.156.46.45:7070/eureka/,http://10.156.46.45:7071/eureka/,http://10.156.46.45:7072/eureka/
+     
+      

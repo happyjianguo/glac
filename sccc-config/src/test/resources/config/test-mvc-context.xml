@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- spring mvc 相关配置 -->
+	<mvc:annotation-driven validator="validator">
+		<mvc:message-converters>
+			<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" /><!-- 默认的charset=utf-8 -->
+		</mvc:message-converters>
+		<mvc:argument-resolvers><!-- 要使用@AuthenticationPrincipal的方式直接在Controller中取Principal必须配这个 -->
+        	<bean class="org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver" />
+    	</mvc:argument-resolvers>
+	</mvc:annotation-driven>
+	
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="utf-8"/>
+		<property name="maxUploadSize">
+			<value>10240000</value>
+		</property>
+		<property name="maxInMemorySize">
+			<value>1024000</value>
+		</property>
+	</bean>
+	
+	<!-- 通过区域解析器来识别用户的区域,用于国际化处理 -->
+	<!-- 检验用户浏览器中的Cookie;如果Cookie不存在，它会根据accept-language HTTP头部确定默认区域 -->
+	<!-- 也可以通过cookieName和cookieMaxAge属性进行定制。cookieMaxAge属性表示这个Cookie应该持续多少秒，-1表示这个Cookie在浏览器关闭之后就失效 -->
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+		<!-- <property name="cookieName" value="language"/>  
+    	<property name="cookieMaxAge" value="3600"/>  
+    	<property name="defaultLocale" value="en"/> -->
+	</bean>
+	
+	<!-- 	拦截器配置 -->
+	<!-- <mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/customer/**"/>
+	       	<bean id="loginInterceptor" class="net.engining.smartstar.www.service.security.interceptor.LoginInterceptor"/>
+		</mvc:interceptor>
+	</mvc:interceptors> -->
+	
+	<mvc:resources location="/" mapping="/*/**"/>
+
+</beans>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+
+	<!-- 0900联机交易对账文件检查是否到达; 更新检查项状态 -->
+	<batch:flow id="sccc-0900-AccountCheckingFileCheck">
+		<batch:step id="stepSccc0900T01" next="stepSccc0900T02">
+			<batch:tasklet>
+				<bean class="net.engining.sccc.batch.infrastructure.MultiFilesOkCheckTasklet" scope="step">
+					<!-- pattern -->
+					<property name="okResourcePattern" ref="multiAccountCheckingOkFileResources" />
+					<property name="dataResourcePattern" ref="multiAccountCheckingDatFileResources" />
+					<property name="inspectionCd" value="CheckTrade" />
+				</bean>
+			</batch:tasklet>
+			<batch:listeners>
+				<batch:listener ref="batchStepLoggedListener" />
+			</batch:listeners>
+		</batch:step>
+		<!-- 读文件入表 -->
+		<batch:step id="stepSccc0900T02" next="stepSccc0900T80">
+			<batch:tasklet>
+				<batch:chunk processor="sccc0900P00OnlineDataImport" chunk-completion-policy="simpleCompletionPolicy">
+					<batch:reader>
+						<bean class="net.engining.sccc.batch.infrastructure.ExtMultiResourceItemReader">
+							<property name="inspectionCd" value="CheckTrade" />
+							<!-- pattern -->
+							<property name="locationPattern" value="ONLINE_TRANSACTION-*.dat" />
+							<property name="flatFileItemReader" ref="onlineFileItemReader" />
+							<property name="headerLinesCallback">
+								<bean class="net.engining.sccc.batch.infrastructure.FileHeaderLineCallbackHandler">
+									<property name="headerLineNumber" value="1" />
+									<property name="headerType" value="JsonString" />
+								</bean>
+							</property>
+						</bean>
+					</batch:reader>
+					<batch:writer>
+						<bean class="net.engining.pg.batch.sdk.NullItemWriter" />
+					</batch:writer>
+				</batch:chunk>
+			</batch:tasklet>
+			<batch:listeners>
+				<batch:listener ref="batchStepFlatFileErroredListener" />
+				<batch:listener ref="batchStepLoggedListener" />
+			</batch:listeners>
+		</batch:step>
+		<!-- 这里mv ok , dat文件， -->
+		<batch:step id="stepSccc0900T80" next="stepSccc0900T99">
+			<batch:tasklet>
+				<bean class="net.engining.sccc.batch.infrastructure.FileOperateTasklet" scope="step">
+					<!-- pattern -->
+					<property name="locationPattern" value="ONLINE_TRANSACTION-*" />
+					<property name="inspectionCd" value="CheckTrade" />
+				</bean>
+			</batch:tasklet>
+			<batch:listeners>
+				<batch:listener ref="batchStepLoggedListener" />
+			</batch:listeners>
+		</batch:step>
+		<batch:step id="stepSccc0900T99">
+			<batch:tasklet ref="sccc0900T99UpdateCheckList" />
+			<batch:listeners>
+				<batch:listener ref="batchStepLoggedListener" />
+			</batch:listeners>
+		</batch:step>
+	</batch:flow>
+
+	<!-- Reader -->
+	<bean id="onlineFileItemReader" class="org.springframework.batch.item.file.FlatFileItemReader">
+		<property name="linesToSkip" value="1" />
+		<property name="strict" value="false" />
+		<property name="encoding" value="UTF-8" />
+		<property name="recordSeparatorPolicy">
+			<bean class="org.springframework.batch.item.file.separator.JsonRecordSeparatorPolicy" />
+		</property>
+		<property name="lineMapper">
+			<bean class="net.engining.pg.batch.sdk.file.FastJsonObjectLineMapper">
+				<property name="detailClass" value="net.engining.sccc.biz.bean.batchBean.EveryDayAccountingBean" />
+			</bean>
+		</property>
+	</bean>
+
+</beans>
+

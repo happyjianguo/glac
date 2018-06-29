@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+	
+	<batch:step id="sccc-0830-DataMigration">
+		<batch:tasklet task-executor="sccc0830Executor">
+			<batch:chunk reader="sccc0830R03BtDataMigrationTempdtl" processor="sccc0830P03LedgerAndVol4Migration" chunk-completion-policy="simpleCompletionPolicy" ><!-- commit-interval="500" #{batchTaskProperties.getDefaultCommitInterval()} -->
+				<batch:writer>
+					<bean class="net.engining.pg.batch.sdk.NullItemWriter" />
+				</batch:writer>
+			</batch:chunk>
+		</batch:tasklet>
+		<batch:listeners>
+			<batch:listener ref="batchStepLoggedListener" />
+		</batch:listeners>
+	</batch:step>
+
+</beans>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+
+	<!-- 批后数据治理 -->
+	<batch:flow id="sccc-9999-ClearingData4EndEOD">
+		<batch:split id="HandleDataAfterBatch9999" task-executor="sccc9999Executor">
+
+			<!--处理cactTxnPost数据 -->
+			<batch:flow>
+				<batch:step id="stepSccc9999T01" next="stepSccc9999T01Sub">
+					<batch:tasklet ref="sccc999901T01CactTxnPost" />
+					<batch:listeners>
+						<batch:listener ref="batchStepLoggedListener" />
+					</batch:listeners>
+				</batch:step>
+
+				<batch:step id="stepSccc9999T01Sub">
+					<batch:tasklet ref="sccc999901T02CactTxnPostSub" />
+					<batch:listeners>
+						<batch:listener ref="batchStepLoggedListener" />
+					</batch:listeners>
+				</batch:step>
+			</batch:flow>
+
+			<!--处理ApGlTxn数据 -->
+			<batch:flow>
+			   <batch:step id="stepSccc9999T02">
+					<batch:partition partitioner="sccc999902R" aggregator="remoteStepExecutionAggregator">
+						<batch:handler grid-size="100" task-executor="sccc9999Executor" />
+						<batch:step>
+							<batch:tasklet>
+								<batch:chunk reader="sccc999902R" processor="sccc999902T02ApGlTxnProcessor" chunk-completion-policy="simpleCompletionPolicy">
+									<batch:writer>
+										<bean class="net.engining.pg.batch.sdk.NullItemWriter" />
+									</batch:writer>
+								</batch:chunk>
+							</batch:tasklet>
+						</batch:step>
+					</batch:partition>
+					<batch:listeners>
+						<batch:listener>
+							<bean class="net.engining.pg.batch.sdk.DebugSupportListener" />
+						</batch:listener>
+					</batch:listeners>
+				</batch:step>
+			</batch:flow>
+
+			<!--处理ApGlVolDtl数据 -->
+			<batch:flow>
+			   <batch:step id="stepSccc9999T03">
+					<batch:partition partitioner="sccc999903R" aggregator="remoteStepExecutionAggregator">
+						<batch:handler grid-size="100" task-executor="sccc9999Executor" />
+						<batch:step>
+							<batch:tasklet>
+								<batch:chunk reader="sccc999903R" processor="sccc999903T02ApGlVolDtlProcessor" chunk-completion-policy="simpleCompletionPolicy">
+									<batch:writer>
+										<bean class="net.engining.pg.batch.sdk.NullItemWriter" />
+									</batch:writer>
+								</batch:chunk>
+							</batch:tasklet>
+						</batch:step>
+					</batch:partition>
+					<batch:listeners>
+						<batch:listener>
+							<bean class="net.engining.pg.batch.sdk.DebugSupportListener" />
+						</batch:listener>
+					</batch:listeners>
+				</batch:step>
+			</batch:flow>
+
+			<!--处理ApGlVolDtlAss数据 -->
+			<batch:flow>
+			 <batch:step id="stepSccc9999T04">
+					<batch:partition partitioner="sccc999904R" aggregator="remoteStepExecutionAggregator">
+						<batch:handler grid-size="100" task-executor="sccc9999Executor" />
+						<batch:step>
+							<batch:tasklet>
+								<batch:chunk reader="sccc999904R" processor="sccc999904T02ApGlVolDtlAssProcessor" chunk-completion-policy="simpleCompletionPolicy">
+									<batch:writer>
+										<bean class="net.engining.pg.batch.sdk.NullItemWriter" />
+									</batch:writer>
+								</batch:chunk>
+							</batch:tasklet>
+						</batch:step>
+					</batch:partition>
+					<batch:listeners>
+						<batch:listener>
+							<bean class="net.engining.pg.batch.sdk.DebugSupportListener" />
+						</batch:listener>
+					</batch:listeners>
+				</batch:step>
+			</batch:flow>
+			</batch:split>
+	</batch:flow>
+</beans>

@@ -1,0 +1,49 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/wen?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    url: jdbc:mysql://192.168.10.132:3306/wishtree?useUnicode=true&characterEncoding=utf-8&useSSL=false
+#    url: jdbc:mysql://10.156.44.40:55944/cc?useUnicode=true&characterEncoding=utf-8&useSSL=false
+#    username: root
+#    password: 123456
+#    username: us_shangcheng
+ #   password: shangC@112233
+    username: root
+    password: svP@55w0rd
+    schema:
+      - classpath:/net/engining/pg/parameter/sqlscript/parameter-mysql.sql
+      - classpath:/net/engining/pg/batch/sqlscript/batch-mysql.sql
+      - classpath:/net/engining/gm/sqlscript/gm-mysql.sql
+      - classpath:/net/engining/pcx/cc/sqlscript/cc-account-mysql.sql
+#      - classpath:/net/engining/pcx/cc/sqlscript/cc-credit-card-mysql.sql
+      - classpath:/net/engining/pcx/cc/sqlscript/cc-inter-accounting-mysql.sql
+      - classpath:/net/engining/pcx/cc/sqlscript/cc-outer-accounting-mysql.sql
+      - classpath:/net/engining/pcx/cc/sqlscript/cc-report-mysql.sql
+      - classpath:/net/engining/pcx/cc/sqlscript/cc-batch-mysql.sql
+      - classpath:/net/engining/profile/sqlscript/profile-mysql.sql
+#      - classpath:/org/springframework/batch/core/schema-drop-mysql.sql
+#      - classpath:/org/springframework/batch/core/schema-mysql.sql
+      - classpath:/sqlscripts/springbatch-drop-mysql.sql
+      - classpath:/sqlscripts/springbatch-create-mysql.sql
+      - classpath:/sqlscripts/springbatch-index-mysql.sql
+    sql-script-encoding: utf-8
+    continue-on-error: true
+  jpa:
+    hibernate:
+      naming:
+#       配置SQL生成命名策略，不用spring默认的会转为小写；配置为保持原命名方式
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+    database: mysql
+    properties:
+      hibernate.format_sql: true
+      pg.snowflake.workerId: 1
+      pg.snowflake.dataCenterId: 1
+    
+sccc:
+  common:
+    default-org-id: "00001"
+    default-password: admin@687
+    businessDate: 2018-03-01
+    lastProcessDate: 2018-02-27
+    processDate: 2018-02-28

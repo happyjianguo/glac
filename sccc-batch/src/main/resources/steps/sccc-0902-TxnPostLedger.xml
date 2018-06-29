@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+	<!-- 交易记账文件; 更新检查项状态 -->
+	<batch:flow id="sccc-0902-TxnPostLedger">
+		<batch:split id="splitFlowSccc0902" task-executor="sccc0902Executor">
+			<!-- 利息计提记账 -->
+			<batch:flow>
+				<batch:step id="stepSccc0902T01" next="stepSccc0902T02">
+					<batch:tasklet>
+						<bean class="net.engining.sccc.batch.infrastructure.MultiFilesOkCheckTasklet" scope="step">
+							<property name="okResourcePattern" ref="multiInteAccrualOkFileResources" />
+							<property name="dataResourcePattern" ref="multiInteAccrualDatFileResources" />
+							<property name="inspectionCd" value="InterestProvision" />
+						</bean>
+					</batch:tasklet>
+					<batch:listeners>
+						<batch:listener ref="batchStepLoggedListener" />
+					</batch:listeners>
+				</batch:step>
+				<batch:step id="stepSccc0902T02" next="stepSccc0902T03">
+					<batch:tasklet>
+						<batch:chunk processor="sccc0902P01InteAccrualDataImport" chunk-completion-policy="simpleCompletionPolicy">
+							<batch:reader>
+								<bean class="net.engining.sccc.batch.infrastructure.ExtMultiResourceItemReader">
+									<property name="inspectionCd" value="InterestProvision" />
+									<!-- <property name="resources" ref="multiInteAccrualDatFileResources" /> -->
+									<property name="locationPattern" value="INTEREST-001-*.dat" />
+									<property name="flatFileItemReader" ref="inteAccrualExtFlatFileItemReader" />
+									<property name="headerLinesCallback">
+										<bean class="net.engining.sccc.batch.infrastructure.FileHeaderLineCallbackHandler">
+											<property name="headerLineNumber" value="1" />
+											<property name="headerType" value="JsonString" />
+										</bean>
+									</property>
+								</bean>
+							</batch:reader>
+							<batch:writer>
+								<bean class="net.engining.pg.batch.sdk.NullItemWriter" />
+							</batch:writer>
+						</batch:chunk>
+					</batch:tasklet>
+					<batch:listeners>
+						<batch:listener ref="batchStepFlatFileErroredListener" />
+						<batch:listener ref="batchStepLoggedListener" />
+					</batch:listeners>
+				</batch:step>
+				<!-- 从表内读取数据按记录入账 -->
+				<batch:step id="stepSccc0902T03" next="stepSccc0902T80">
+					<batch:partition partitioner="sccc0902R01" aggregator="remoteStepExecutionAggregator">
+						<batch:handler grid-size="100" task-executor="sccc0902Executor" />
+						<batch:step>
+							<batch:tasklet>
+								<batch:chunk reader="sccc0902R01" processor="sccc0902P11InteAccrualPostLedger" chunk-completion-policy="simpleCompletionPolicy">
+									<batch:writer>
+										<bean class="net.engining.pg.batch.sdk.NullItemWriter" />
+									</batch:writer>
+								</batch:chunk>
+							</batch:tasklet>
+						</batch:step>
+					</batch:partition>
+					<batch:listeners>
+						<batch:listener>
+							<bean class="net.engining.pg.batch.sdk.DebugSupportListener" />
+						</batch:listener>
+					</batch:listeners>
+				</batch:step>
+				<!-- 增加mv文件到backup step -->
+				<batch:step id="stepSccc0902T80" next="stepSccc0902T90">
+					<batch:tasklet>
+						<bean class="net.engining.sccc.batch.infrastructure.FileOperateTasklet" scope="step">
+							<!-- <property name="fileOperateActions" ref="multiInteAccrualFileOperateActions" /> -->
+							<property name="locationPattern" value="INTEREST-001-*" />
+							<property name="inspectionCd" value="InterestProvision" />
+						</bean>
+					</batch:tasklet>
+					<batch:listeners>
+						<batch:listener ref="batchStepLoggedListener" />
+					</batch:listeners>
+				</batch:step>
+				<batch:step id="stepSccc0902T90">
+					<batch:tasklet ref="sccc0902T90InteAccrualUpdateCheckList" />
+				</batch:step>
+			</batch:flow>
+
+			<!-- 罚息计提记账 -->
+			<batch:flow>
+				<batch:step id="stepSccc0902T04" next="stepSccc0902T05">
+					<batch:tasklet>
+						<bean class="net.engining.sccc.batch.infrastructure.MultiFilesOkCheckTasklet" scope="step">
+							<property name="okResourcePattern" ref="multiPintAccrualOkFileResources" />
+							<property name="dataResourcePattern" ref="multiPintAccrualDatFileResources" />
+							<property name="inspectionCd" value="PaymentRecord" />
+						</bean>
+					</batch:tasklet>
+					<batch:listeners>
+						<batch:listener ref="batchStepLoggedListener" />
+					</batch:listeners>
+				</batch:step>
+				<batch:step id="stepSccc0902T05" next="stepSccc0902T06">
+					<batch:tasklet>
+						<batch:chunk processor="sccc0902P02PintAccrualDataImport" chunk-completion-policy="simpleCompletionPolicy">
+							<batch:reader>
+								<bean class="net.engining.sccc.batch.infrastructure.ExtMultiResourceItemReader">
+									<property name="inspectionCd" value="PaymentRecord" />
+									<!-- <property name="resources" ref="multiPintAccrualDatFileResources" /> -->
+									<property name="locationPattern" value="PINTEREST-001-*.dat" />
+									<property name="flatFileItemReader" ref="pintAccrualExtFlatFileItemReader" />
+									<property name="headerLinesCallback">
+										<bean class="net.engining.sccc.batch.infrastructure.FileHeaderLineCallbackHandler">
+											<property name="headerLineNumber" value="1" />
+											<property name="headerType" value="JsonString" />
+										</bean>
+									</property>
+								</bean>
+							</batch:reader>
+							<batch:writer>
+								<bean class="net.engining.pg.batch.sdk.NullItemWriter" />
+							</batch:writer>
+						</batch:chunk>
+					</batch:tasklet>
+					<batch:listeners>
+						<batch:listener ref="batchStepFlatFileErroredListener" />
+						<batch:listener ref="batchStepLoggedListener" />
+					</batch:listeners>
+				</batch:step>
+				<!-- 从表内读取数据按记录入账 -->
+				<batch:step id="stepSccc0902T06" next="stepSccc0902T81">
+					<batch:partition partitioner="sccc0902R02" aggregator="remoteStepExecutionAggregator">
+						<batch:handler grid-size="100" task-executor="sccc0902Executor" />
+						<batch:step>
+							<batch:tasklet>
+								<batch:chunk reader="sccc0902R02" processor="sccc0902P12PintAccrualPostLedger" chunk-completion-policy="simpleCompletionPolicy">
+									<batch:writer>
+										<bean class="net.engining.pg.batch.sdk.NullItemWriter" />
+									</batch:writer>
+								</batch:chunk>
+							</batch:tasklet>
+						</batch:step>
+					</batch:partition>
+					<batch:listeners>
+						<batch:listener>
+							<bean class="net.engining.pg.batch.sdk.DebugSupportListener" />
+						</batch:listener>
+					</batch:listeners>
+				</batch:step>
+				<!-- 增加mv文件到backup step -->
+				<batch:step id="stepSccc0902T81" next="stepSccc0902T91">
+					<batch:tasklet>
+						<bean class="net.engining.sccc.batch.infrastructure.FileOperateTasklet" scope="step">
+							<!-- <property name="fileOperateActions" ref="multiPintAccrualFileOperateActions" /> -->
+							<property name="locationPattern" value="PINTEREST-001-*" />
+							<property name="inspectionCd" value="PaymentRecord" />
+						</bean>
+					</batch:tasklet>
+					<batch:listeners>
+						<batch:listener ref="batchStepLoggedListener" />
+					</batch:listeners>
+				</batch:step>
+				<batch:step id="stepSccc0902T91">
+					<batch:tasklet ref="sccc0902T91PinteAccrualUpdateCheckList" />
+				</batch:step>
+			</batch:flow>
+			<!-- 余额成分结转记账 -->
+			<batch:flow>
+				<batch:step id="stepSccc0902T07" next="stepSccc0902T08">
+					<batch:tasklet>
+						<bean class="net.engining.sccc.batch.infrastructure.MultiFilesOkCheckTasklet" scope="step">
+							<property name="okResourcePattern" ref="multiTransformOkFileResources" />
+							<property name="dataResourcePattern" ref="multiTransformDatFileResources" />
+							<property name="inspectionCd" value="BalCarriedForward" />
+						</bean>
+					</batch:tasklet>
+					<batch:listeners>
+						<batch:listener ref="batchStepLoggedListener" />
+					</batch:listeners>
+				</batch:step>
+				<batch:step id="stepSccc0902T08" next="stepSccc0902T09">
+					<batch:tasklet>
+						<batch:chunk processor="sccc0902P03TransformDataImport" chunk-completion-policy="simpleCompletionPolicy">
+							<batch:reader>
+								<bean class="net.engining.sccc.batch.infrastructure.ExtMultiResourceItemReader">
+									<property name="inspectionCd" value="BalCarriedForward" />
+									<!-- <property name="resources" ref="multiTransformDatFileResources" /> -->
+									<property name="locationPattern" value="TRANSFORM-001-*.dat" />
+									<property name="flatFileItemReader" ref="transformExtFlatFileItemReader" />
+									<property name="headerLinesCallback">
+										<bean class="net.engining.sccc.batch.infrastructure.FileHeaderLineCallbackHandler">
+											<property name="headerLineNumber" value="1" />
+											<property name="headerType" value="JsonString" />
+										</bean>
+									</property>
+								</bean>
+							</batch:reader>
+							<batch:writer>
+								<bean class="net.engining.pg.batch.sdk.NullItemWriter" />
+							</batch:writer>
+						</batch:chunk>
+					</batch:tasklet>
+					<batch:listeners>
+						<batch:listener ref="batchStepFlatFileErroredListener" />
+						<batch:listener ref="batchStepLoggedListener" />
+					</batch:listeners>
+				</batch:step>
+				<!-- 从表内读取数据按记录入账 -->
+				<batch:step id="stepSccc0902T09" next="stepSccc0902T82">
+					<batch:partition partitioner="sccc0902R03" aggregator="remoteStepExecutionAggregator">
+						<batch:handler grid-size="100" task-executor="sccc0902Executor" />
+						<batch:step>
+							<batch:tasklet>
+								<batch:chunk reader="sccc0902R03" processor="sccc0902P13TransformPostLedger" chunk-completion-policy="simpleCompletionPolicy">
+									<batch:writer>
+										<bean class="net.engining.pg.batch.sdk.NullItemWriter" />
+									</batch:writer>
+								</batch:chunk>
+							</batch:tasklet>
+						</batch:step>
+					</batch:partition>
+					<batch:listeners>
+						<batch:listener>
+							<bean class="net.engining.pg.batch.sdk.DebugSupportListener" />
+						</batch:listener>
+					</batch:listeners>
+				</batch:step>
+				<!-- 增加mv文件到backup step -->
+				<batch:step id="stepSccc0902T82" next="stepSccc0902T92">
+					<batch:tasklet>
+						<bean class="net.engining.sccc.batch.infrastructure.FileOperateTasklet" scope="step">
+							<!-- <property name="fileOperateActions" ref="multiTransformFileOperateActions" /> -->
+							<property name="locationPattern" value="TRANSFORM-001-*" />
+							<property name="inspectionCd" value="BalCarriedForward" />
+						</bean>
+					</batch:tasklet>
+					<batch:listeners>
+						<batch:listener ref="batchStepLoggedListener" />
+					</batch:listeners>
+				</batch:step>
+				<batch:step id="stepSccc0902T92">
+					<batch:tasklet ref="sccc0902T92TransformUpdateCheckList" />
+				</batch:step>
+			</batch:flow>
+			<!-- 批量还款记账 -->
+			<batch:flow>
+				<batch:step id="stepSccc0902T10" next="stepSccc0902T11">
+					<batch:tasklet>
+						<bean class="net.engining.sccc.batch.infrastructure.MultiFilesOkCheckTasklet" scope="step">
+							<property name="okResourcePattern" ref="multiBatchRepayOkFileResources" />
+							<property name="dataResourcePattern" ref="multiBatchRepayDatFileResources" />
+							<property name="inspectionCd" value="RepaymentAcct" />
+						</bean>
+					</batch:tasklet>
+					<batch:listeners>
+						<batch:listener ref="batchStepLoggedListener" />
+					</batch:listeners>
+				</batch:step>
+				<batch:step id="stepSccc0902T11" next="stepSccc0902T12">
+					<batch:tasklet>
+						<batch:chunk processor="sccc0902P04BatchRepayDataImport" chunk-completion-policy="simpleCompletionPolicy">
+							<batch:reader>
+								<bean class="net.engining.sccc.batch.infrastructure.ExtMultiResourceItemReader">
+									<property name="inspectionCd" value="RepaymentAcct" />
+									<!-- <property name="resources" ref="multiBatchRepayDatFileResources" /> -->
+									<property name="locationPattern" value="BATCHREPAY-001-*.dat" />
+									<property name="flatFileItemReader" ref="batchRepayExtFlatFileItemReader" />
+									<property name="headerLinesCallback">
+										<bean class="net.engining.sccc.batch.infrastructure.FileHeaderLineCallbackHandler">
+											<property name="headerLineNumber" value="1" />
+											<property name="headerType" value="JsonString" />
+										</bean>
+									</property>
+								</bean>
+							</batch:reader>
+							<batch:writer>
+								<bean class="net.engining.pg.batch.sdk.NullItemWriter" />
+							</batch:writer>
+						</batch:chunk>
+					</batch:tasklet>
+					<batch:listeners>
+						<batch:listener ref="batchStepFlatFileErroredListener" />
+						<batch:listener ref="batchStepLoggedListener" />
+					</batch:listeners>
+				</batch:step>
+				<!-- 从表内读取数据按记录入账 -->
+				<batch:step id="stepSccc0902T12" next="stepSccc0902T83">
+					<batch:partition partitioner="sccc0902R04" aggregator="remoteStepExecutionAggregator">
+						<batch:handler grid-size="100" task-executor="sccc0902Executor" />
+						<batch:step>
+							<batch:tasklet>
+								<batch:chunk reader="sccc0902R04" processor="sccc0902P14BatchRepayPostLedger" chunk-completion-policy="simpleCompletionPolicy">
+									<batch:writer>
+										<bean class="net.engining.pg.batch.sdk.NullItemWriter" />
+									</batch:writer>
+								</batch:chunk>
+							</batch:tasklet>
+						</batch:step>
+					</batch:partition>
+					<batch:listeners>
+						<batch:listener>
+							<bean class="net.engining.pg.batch.sdk.DebugSupportListener" />
+						</batch:listener>
+					</batch:listeners>
+				</batch:step>
+				<!-- 增加mv文件到backup step -->
+				<batch:step id="stepSccc0902T83" next="stepSccc0902T93">
+					<batch:tasklet>
+						<bean class="net.engining.sccc.batch.infrastructure.FileOperateTasklet" scope="step">
+							<!-- <property name="fileOperateActions" ref="multiBatchRepayFileOperateActions" /> -->
+							<property name="locationPattern" value="BATCHREPAY-001-*" />
+							<property name="inspectionCd" value="RepaymentAcct" />
+						</bean>
+					</batch:tasklet>
+					<batch:listeners>
+						<batch:listener ref="batchStepLoggedListener" />
+					</batch:listeners>
+				</batch:step>
+				<batch:step id="stepSccc0902T93">
+					<batch:tasklet ref="sccc0902T93BatchRepayUpdateCheckList" />
+				</batch:step>
+			</batch:flow>
+		</batch:split>
+	</batch:flow>
+
+	<!-- 利息计提文件Reader -->
+	<bean id="inteAccrualExtFlatFileItemReader" class="net.engining.sccc.batch.infrastructure.ExtFlatFileItemReader">
+		<property name="linesToSkip" value="1" />
+		<property name="strict" value="false" />
+		<property name="encoding" value="UTF-8" />
+		<property name="recordSeparatorPolicy">
+			<bean class="org.springframework.batch.item.file.separator.JsonRecordSeparatorPolicy" />
+		</property>
+		<property name="lineMapper">
+			<bean class="net.engining.pg.batch.sdk.file.FastJsonObjectLineMapper">
+				<property name="detailClass" value="net.engining.sccc.biz.bean.batchBean.EveryDayAccountingBean" />
+			</bean>
+		</property>
+	</bean>
+
+	<!-- 罚息计提文件Reader -->
+	<bean id="pintAccrualExtFlatFileItemReader" class="net.engining.sccc.batch.infrastructure.ExtFlatFileItemReader">
+		<property name="linesToSkip" value="1" />
+		<property name="strict" value="false" />
+		<property name="encoding" value="UTF-8" />
+		<property name="recordSeparatorPolicy">
+			<bean class="org.springframework.batch.item.file.separator.JsonRecordSeparatorPolicy" />
+		</property>
+		<property name="lineMapper">
+			<bean class="net.engining.pg.batch.sdk.file.FastJsonObjectLineMapper">
+				<property name="detailClass" value="net.engining.sccc.biz.bean.batchBean.EveryDayAccountingBean" />
+			</bean>
+		</property>
+	</bean>
+	<!-- 余额结转文件Reader -->
+	<bean id="transformExtFlatFileItemReader" class="net.engining.sccc.batch.infrastructure.ExtFlatFileItemReader">
+		<property name="linesToSkip" value="1" />
+		<property name="strict" value="false" />
+		<property name="encoding" value="UTF-8" />
+		<property name="recordSeparatorPolicy">
+			<bean class="org.springframework.batch.item.file.separator.JsonRecordSeparatorPolicy" />
+		</property>
+		<property name="lineMapper">
+			<bean class="net.engining.pg.batch.sdk.file.FastJsonObjectLineMapper">
+				<property name="detailClass" value="net.engining.sccc.biz.bean.batchBean.EveryDayAccountingBean" />
+			</bean>
+		</property>
+	</bean>
+	<!-- 批量还款文件Reader -->
+	<bean id="batchRepayExtFlatFileItemReader" class="net.engining.sccc.batch.infrastructure.ExtFlatFileItemReader">
+		<property name="linesToSkip" value="1" />
+		<property name="strict" value="false" />
+		<property name="encoding" value="UTF-8" />
+		<property name="recordSeparatorPolicy">
+			<bean class="org.springframework.batch.item.file.separator.JsonRecordSeparatorPolicy" />
+		</property>
+		<property name="lineMapper">
+			<bean class="net.engining.pg.batch.sdk.file.FastJsonObjectLineMapper">
+				<property name="detailClass" value="net.engining.sccc.biz.bean.batchBean.EveryDayAccountingBean" />
+			</bean>
+		</property>
+	</bean>
+</beans>

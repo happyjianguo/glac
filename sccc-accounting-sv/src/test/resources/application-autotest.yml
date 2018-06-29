@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:memdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;MVCC=true
+    username: sa
+  jpa:
+    hibernate:
+      naming:
+#       配置SQL生成命名策略，不用spring默认的会转为小写；配置为保持原命名方式
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+#     在使用embedded database时，默认create-drop；因为使用的是H2内存模式，所以只需要create即可
+      ddl-auto: create
+    show-sql: true
+    database: h2
+    properties:
+      hibernate.format_sql: true
+
+eureka:
+  client:
+    enabled: false

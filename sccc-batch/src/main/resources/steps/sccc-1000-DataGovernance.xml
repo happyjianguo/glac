@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd">
+
+	<!-- 批前数据治理 -->
+	<batch:flow id="sccc-1000-DataGovernance">
+		<batch:step id="stepSccc1000T10" next="stepSccc1000T01Sub">
+			<batch:tasklet ref="sccc1000T10ApSubjectSummary" />
+			<batch:listeners>
+				<batch:listener ref="batchStepLoggedListener" />
+			</batch:listeners>
+		</batch:step>
+<!-- 		<batch:step id="stepSccc1000T99"> -->
+<!-- 			<batch:tasklet> -->
+<!-- 				<bean class="net.engining.pg.batch.sdk.TableTruncateTasklet" scope="step"> -->
+<!-- 					<property name="entities"> -->
+<!-- 						<list> -->
+<!-- 							<value>net.engining.pcx.cc.infrastructure.shared.model.ApSubjectSummary</value> -->
+<!-- 						</list> -->
+<!-- 					</property> -->
+<!-- 				</bean> -->
+<!-- 			</batch:tasklet> -->
+<!-- 			<batch:listeners> -->
+<!-- 				<batch:listener ref="batchStepLoggedListener" /> -->
+<!-- 			</batch:listeners> -->
+<!-- 		</batch:step> -->
+		
+		<batch:step id="stepSccc1000T01Sub">
+			<batch:tasklet ref="sccc1000T20DeleteApSubjectSummary" />
+			<batch:listeners>
+				<batch:listener ref="batchStepLoggedListener" />
+			</batch:listeners>
+		</batch:step>
+	</batch:flow>
+	
+</beans>

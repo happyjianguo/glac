@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>net.engining.sccc</groupId>
+		<artifactId>sccc</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
+
+	<artifactId>sccc-init</artifactId>
+	<name>账务核算系统 数据初始化(Init)</name>
+	<packaging>jar</packaging>
+
+	<properties>
+		<maven.deploy.skip>true</maven.deploy.skip>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>net.engining.pg</groupId>
+			<artifactId>pg-parameter-dict</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.engining.pg</groupId>
+			<artifactId>pg-batch-dict</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.engining.gm</groupId>
+			<artifactId>gm-dict</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.engining.profile</groupId>
+			<artifactId>profile-param-model</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.engining.profile</groupId>
+			<artifactId>profile-dict</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.engining.pcx.cc</groupId>
+			<artifactId>cc-dict</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.engining.pcx.cc</groupId>
+			<artifactId>cc-process-service</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.engining.sccc</groupId>
+			<artifactId>sccc-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.engining.sccc</groupId>
+			<artifactId>sccc-biz-service</artifactId>
+		</dependency>
+
+
+		<!-- dbcp连接池和mysql驱动 -->
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>aspectj-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<executable>true</executable>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

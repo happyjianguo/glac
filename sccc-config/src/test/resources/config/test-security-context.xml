@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- 支持基于AspectJ的方法级安全 -->
+	<!--
+	开启支持方法注解的权限控制：
+	@PreAuthorize：该注解用来确定一个方法是否应该被执行。该注解后面跟着的是一个表达式，如果表达式的值为真，则该方法会被执行。如 @PreAuthorize("hasRole('ROLE_USER')")就说明只有当前用户具有角色 ROLE_USER的时候才会执行。
+	@PostAuthorize：该注解用来在方法执行完之后进行访问控制检查。
+	@PostFilter：该注解用来对方法的返回结果进行过滤。从返回的集合中过滤掉表达式值为假的元素。如@PostFilter("hasPermission(filterObject, 'read')")说明返回的结果中只保留当前用户有读权限的元素。
+	@PreFilter：该注解用来对方法调用时的参数进行过滤。	
+	-->
+	<security:global-method-security pre-post-annotations="enabled" mode="aspectj"/>
+
+	<!-- 不用权限管理的资源路径；静态资源 -->
+	<security:http pattern="/static/js/**" security="none"/>
+	<security:http pattern="/static/images/**" security="none"/>
+	<security:http pattern="/static/css/**" security="none"/>
+	<security:http pattern="/static/fonts/**" security="none"/>
+
+	<!-- 安全控制；需要区分多个登陆入口是，可通过pattern=""，根据antpath表达式路由到各个登陆入口 -->
+	<security:http use-expressions="true" create-session="always" request-matcher="ant" entry-point-ref="entryPoint">
+	
+		<security:form-login authentication-success-handler-ref="jsonSuccessHandler" authentication-failure-handler-ref="jsonFailureHandler" 
+			authentication-details-source-ref="ssAuthenticationDetailsSource" />
+		
+		<!-- 可以通过以下设置custom-filter的方式，代替form-login -->
+		<!-- 使用验证码过滤器 --> 
+		<!-- <security:custom-filter ref="adminAuthenticationFilter" position="FORM_LOGIN_FILTER" />  -->
+		<!-- 使用自定义的过滤器 --> 
+		<!-- <security:custom-filter ref="adminSecurityFilter" before="FILTER_SECURITY_INTERCEPTOR"/> -->
+		
+		<!-- 缓存被登陆拦截的请求 -->	
+		<security:request-cache ref="requestCache"/>
+		
+		<!-- 实现免登陆验证：key属性是用来标记存放token的cookie的，对应上文提到的生成token时的那个key。
+			这里有两个需要注意的地方。
+			第一，如果你的登录页面是自定义的，那么需要在登录页面上新增一个名为“_spring_security_remember_me”的checkbox，这是基于NameSpace定义提供的默认名称，
+				如果要自定义可以自己定义TokenBasedRememberMeServices或PersistentTokenBasedRememberMeServices对应的bean，然后通过其parameter属性进行指定。
+			第二，上述功能需要一个UserDetailsService，如果在你的ApplicationContext中已经拥有一个了，那么Spring Security将自动获取；如果没有，那么当然你需要定义一个；
+				如果拥有在ApplicationContext中拥有多个UserDetailsService定义，那么你需要通过remember-me元素的user-service-ref属性指定将要使用的那个。
+		--> 
+        <!-- <security:remember-me key="elim" /> -->
+        
+		<!-- <security:logout success-handler-ref="jsonLogoutSuccessHandler"/> 这是直接返回Json的方式，必须通过js来控制跳转，下面的方式是由spring管理跳转到指定页面-->
+		<!-- 
+        logout-url 属性:这个指定的URL会触发注销操作，默认是 /j_spring_security_logout
+        invalidate-session 属性：如果为true，在注销的时候会销毁会话
+        delete-cookies 属性：以逗号分隔的cookies名称，在用户注销时删除指定的cookies
+        -->
+		<security:logout logout-url="/logout" logout-success-url="/login.html" invalidate-session="true" delete-cookies="JSESSIONID"/>
+		
+		<!--
+        	session超时跳转页面 以及每用户可拥有的session最大个数 （单个账户不允许多处登录）
+        	如果每次退出后，必须要求用户必须重开浏览器才能登录，可以将 invalid-session-url="/logout.jsp"，防止有些 Web 应用把用户的会话标识符直接通过 URL 的参数来传递        
+        -->
+  		<security:session-management>
+  			<security:concurrency-control expired-url="/login.html" error-if-maximum-exceeded="false" max-sessions="1" />
+  		</security:session-management>
+  		
+  		<!-- 指定某角色能访问的资源 -->
+        <!-- <intercept-url pattern="/u/super/**" access="hasRole('ROLE_SUPER')"/> -->
+		<!-- 以上未列出的，也都必须验证才能访问 -->
+        <!-- <intercept-url pattern="/**" access="isAuthenticated()" /> -->
+        
+ 		<security:intercept-url pattern="/*/**" access="permitAll()"/><!-- 这里允许所有的path访问，权限通过Controller方法上加@PreAuthorize控制 -->
+ 		
+ 		<!--FIXME CSRF 跨站请求伪造；目前暂时打开；-->
+ 		<security:csrf disabled="true"/>
+ 		
+ 		<security:headers>
+			<security:cache-control />
+			<security:content-type-options />
+			<security:hsts />
+			<security:xss-protection />
+			<security:frame-options policy="SAMEORIGIN"/>
+		</security:headers>
+		
+	</security:http>
+	
+	<bean id="jsonSuccessHandler" class="net.engining.smartstar.www.security.JsonAuthSuccessHandler"/>
+	<bean id="jsonFailureHandler" class="net.engining.profile.sdk.security.JsonAuthFailureHandler"/>
+	
+	<!-- <bean id="jsonLogoutSuccessHandler" class="net.engining.tcs.service.security.JsonLogoutSuccessHandler"/> -->
+	
+	<!-- 处理ajax请求时session登录重定向问题 -->
+	<bean id="requestCache" class="org.springframework.security.web.savedrequest.HttpSessionRequestCache">
+		<property name="requestMatcher">
+			<bean class="net.engining.smartstar.www.security.NonAjaxRequestMatcher"/>
+		</property>
+	</bean>
+	
+	<bean id="entryPoint" class="net.engining.smartstar.www.security.Ajax401EntryPoint">
+<!-- 		<constructor-arg name="loginFormUrl" value="/login.html"/> -->
+	</bean>
+	
+	<bean id="userDetailsService" class="net.engining.profile.sdk.security.ProfileUserDetailsService"/>
+	<!-- 出于对profile的支持，需要把passwordEncoder和秘钥值配在外面，以便于Profile中用户管理的服务使用;且id="passwordEncoder"不要改变 -->
+	<bean id="passwordEncoder" class="org.springframework.security.crypto.password.StandardPasswordEncoder">
+		<constructor-arg name="secret" value="smartstar-secret" /> <!-- 注意这里的秘钥值 -->
+	</bean>
+	<security:authentication-manager alias="authenticationManager">
+		<security:authentication-provider user-service-ref="userDetailsService" >
+			<security:password-encoder ref="passwordEncoder"/>
+		</security:authentication-provider>
+	</security:authentication-manager>
+	
+	<!-- 处理密码重试次数的Listener, 定义在这里就好，通过Spring的消息机制工作 -->
+	<bean class="net.engining.profile.sdk.security.PasswordTriesListener"/>
+	<bean class="net.engining.profile.sdk.security.ClearPasswordTriesListener"/>
+	
+	<!-- 生成供APP非图形验证码登陆用的Token；因为安全的原因放弃使用Remember-Me -->
+	<bean class="org.springframework.security.core.token.KeyBasedPersistenceTokenService">
+		<property name="serverSecret" value="smartstar-app-secret"/><!-- 生成token的密钥值 -->
+		<property name="serverInteger" value="1001"/>
+		<property name="secureRandom" ref="secureRandom"/>
+	</bean>
+	<bean name="secureRandom" class="java.security.SecureRandom">
+	    <property name="seed" value="666"/>
+	</bean>
+</beans>
