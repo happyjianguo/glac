@@ -5,22 +5,22 @@
 	<parent>
 		<groupId>net.engining.pg</groupId>
 		<artifactId>pg-parent</artifactId>
-		<version>3.2.0-SNAPSHOT</version>
+		<version>3.3.0-SNAPSHOT</version>
 	</parent>
 
 	<groupId>net.engining.sccc</groupId>
 	<artifactId>sccc</artifactId>
-	<name>尚诚消费金融账务核算系统</name>
+	<name>消费金融账务核算系统</name>
 	<packaging>pom</packaging>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 
 	<properties>
-		<pg.version>3.2.0-SNAPSHOT</pg.version>
-		<control.version>1.1.0-SNAPSHOT</control.version>
-		<gm.version>1.2.0-SNAPSHOT</gm.version>
-		<cc.version>2.1.0-SNAPSHOT</cc.version>
-		<profile.version>4.0.0-SNAPSHOT</profile.version>
-		<sccc.version>0.0.1-SNAPSHOT</sccc.version>
+		<pg.version>3.3.0-SNAPSHOT</pg.version>
+		<control.version>1.1.1-SNAPSHOT</control.version>
+		<gm.version>1.2.1-SNAPSHOT</gm.version>
+		<cc.version>2.1.1-SNAPSHOT</cc.version>
+		<profile.version>4.0.1-SNAPSHOT</profile.version>
+		<sccc.version>0.0.2-SNAPSHOT</sccc.version>
 	</properties>
 
 	<modules>
