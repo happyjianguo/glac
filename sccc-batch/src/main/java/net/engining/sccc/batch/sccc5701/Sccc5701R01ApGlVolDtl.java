@@ -22,7 +22,7 @@ import net.engining.pcx.cc.infrastructure.shared.model.GlTransOprHst;
 import net.engining.pcx.cc.infrastructure.shared.model.QApGlVolDtl;
 import net.engining.pcx.cc.infrastructure.shared.model.QGlTransOprHst;
 import net.engining.pcx.cc.param.model.enums.PostGlInd;
-import net.engining.pg.batch.sdk.KeyBasedStreamReader;
+import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
 
 /**
  * 读取会计分录表数据
@@ -31,7 +31,7 @@ import net.engining.pg.batch.sdk.KeyBasedStreamReader;
  */
 @Service
 @StepScope
-public class Sccc5701R01ApGlVolDtl extends KeyBasedStreamReader<String, ApGlVolDtl> {
+public class Sccc5701R01ApGlVolDtl extends AbstractKeyBasedStreamReader<String, ApGlVolDtl> {
 
 	@PersistenceContext
 	private EntityManager em;

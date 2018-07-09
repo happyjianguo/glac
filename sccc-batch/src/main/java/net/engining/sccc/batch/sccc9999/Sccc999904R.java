@@ -16,7 +16,7 @@ import com.google.common.collect.Lists;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import net.engining.pcx.cc.infrastructure.shared.model.QApGlVolDtlAss;
-import net.engining.pg.batch.sdk.KeyBasedStreamReader;
+import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
 import net.engining.pg.support.db.querydsl.FetchResponse;
 import net.engining.pg.support.db.querydsl.Range;
 import net.engining.sccc.batch.service.DataBatchProcessService;
@@ -24,7 +24,7 @@ import net.engining.sccc.config.props.BatchTaskProperties;
 
 @Service
 @StepScope
-public class Sccc999904R  extends KeyBasedStreamReader<Range, List<String>> implements InitializingBean{
+public class Sccc999904R  extends AbstractKeyBasedStreamReader<Range, List<String>> implements InitializingBean{
 
 	@PersistenceContext
 	private EntityManager em;

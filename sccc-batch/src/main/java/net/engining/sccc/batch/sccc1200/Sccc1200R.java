@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import net.engining.pg.batch.sdk.KeyBasedStreamReader;
+import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
 
 /**
  * @author luxue
@@ -21,7 +21,7 @@ import net.engining.pg.batch.sdk.KeyBasedStreamReader;
  */
 @Service("sccc1200R")
 @StepScope
-public class Sccc1200R extends KeyBasedStreamReader<String, Map<String, Object>>{
+public class Sccc1200R extends AbstractKeyBasedStreamReader<String, Map<String, Object>>{
 	
 	private static final Logger log = LoggerFactory.getLogger(Sccc1200R.class);
 	

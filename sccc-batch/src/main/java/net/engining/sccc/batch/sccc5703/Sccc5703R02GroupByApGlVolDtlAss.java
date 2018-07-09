@@ -18,11 +18,11 @@ import net.engining.gm.infrastructure.enums.TxnDirection;
 import net.engining.pcx.cc.infrastructure.shared.enums.AssistAccountingType;
 import net.engining.pcx.cc.infrastructure.shared.model.QApGlVolDtlAss;
 import net.engining.pcx.cc.param.model.enums.RedBlueInd;
-import net.engining.pg.batch.sdk.KeyBasedStreamReader;
+import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
 import net.engining.sccc.batch.sccc5703.bean.SubjectAssist;
 @Service
 @StepScope
-public class Sccc5703R02GroupByApGlVolDtlAss extends KeyBasedStreamReader<String, SubjectAssist> {
+public class Sccc5703R02GroupByApGlVolDtlAss extends AbstractKeyBasedStreamReader<String, SubjectAssist> {
 
 	@PersistenceContext
 	private EntityManager em;

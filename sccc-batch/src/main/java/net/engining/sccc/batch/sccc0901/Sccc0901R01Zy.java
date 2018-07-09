@@ -16,7 +16,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import net.engining.pcx.cc.infrastructure.shared.model.BtZyImport;
 import net.engining.pcx.cc.infrastructure.shared.model.QBtZyImport;
-import net.engining.pg.batch.sdk.KeyBasedStreamReader;
+import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
 
 /**
  * @author luxue
@@ -24,7 +24,7 @@ import net.engining.pg.batch.sdk.KeyBasedStreamReader;
  */
 @Service
 @StepScope
-public class Sccc0901R01Zy extends KeyBasedStreamReader<Integer, BtZyImport>{
+public class Sccc0901R01Zy extends AbstractKeyBasedStreamReader<Integer, BtZyImport>{
 	
 	@PersistenceContext
 	private EntityManager em;

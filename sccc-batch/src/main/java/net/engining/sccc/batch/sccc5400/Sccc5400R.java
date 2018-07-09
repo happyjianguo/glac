@@ -20,12 +20,12 @@ import net.engining.pcx.cc.infrastructure.shared.model.QApGlVolDtl;
 import net.engining.pcx.cc.infrastructure.shared.model.QGlTransOprHst;
 import net.engining.pcx.cc.param.model.enums.PostGlInd;
 import net.engining.pcx.cc.param.model.enums.RedBlueInd;
-import net.engining.pg.batch.sdk.KeyBasedStreamReader;
+import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
 import net.engining.sccc.batch.sccc5400.bean.SummaryBySubject;
 
 @Service
 @StepScope
-public class Sccc5400R extends KeyBasedStreamReader<String, SummaryBySubject>{
+public class Sccc5400R extends AbstractKeyBasedStreamReader<String, SummaryBySubject>{
 	
 	@PersistenceContext
 	private EntityManager em;

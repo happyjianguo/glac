@@ -16,10 +16,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import net.engining.pcx.cc.infrastructure.shared.enums.CheckAccountStatusDef;
 import net.engining.pcx.cc.infrastructure.shared.model.CactTxnPost;
 import net.engining.pcx.cc.infrastructure.shared.model.QCactTxnPost;
-import net.engining.pg.batch.sdk.KeyBasedStreamReader;
+import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
 @Service
 @StepScope
-public class Sccc1101R03 extends KeyBasedStreamReader<Integer, CactTxnPost>{
+public class Sccc1101R03 extends AbstractKeyBasedStreamReader<Integer, CactTxnPost>{
 	
 	@PersistenceContext
 	private EntityManager em;

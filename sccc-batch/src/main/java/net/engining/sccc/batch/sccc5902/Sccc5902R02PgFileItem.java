@@ -13,10 +13,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import net.engining.pg.batch.entity.model.PgFileItem;
 import net.engining.pg.batch.entity.model.QPgFileItem;
-import net.engining.pg.batch.sdk.KeyBasedStreamReader;
+import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
 @Service
 @StepScope
-public class Sccc5902R02PgFileItem extends KeyBasedStreamReader<Long, PgFileItem>{
+public class Sccc5902R02PgFileItem extends AbstractKeyBasedStreamReader<Long, PgFileItem>{
 	@PersistenceContext
 	private EntityManager em;
 	@Value("#{jobParameters['batchSeq']}")

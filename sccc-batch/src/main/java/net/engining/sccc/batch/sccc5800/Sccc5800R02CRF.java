@@ -14,10 +14,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import net.engining.pcx.cc.infrastructure.shared.model.ApSubjectSummary;
 import net.engining.pcx.cc.infrastructure.shared.model.QApSubjectSummary;
-import net.engining.pg.batch.sdk.KeyBasedStreamReader;
+import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
 @Service
 @StepScope
-public class Sccc5800R02CRF extends KeyBasedStreamReader<Integer, ApSubjectSummary>{
+public class Sccc5800R02CRF extends AbstractKeyBasedStreamReader<Integer, ApSubjectSummary>{
 	@PersistenceContext
 	private EntityManager em;
 	@Value("#{new java.util.Date(jobParameters['batchDate'].time)}")

@@ -15,11 +15,11 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import net.engining.pcx.cc.infrastructure.shared.enums.TxnTypeDef;
 import net.engining.pcx.cc.infrastructure.shared.model.BtEodTxnImport;
 import net.engining.pcx.cc.infrastructure.shared.model.QBtEodTxnImport;
-import net.engining.pg.batch.sdk.KeyBasedStreamReader;
+import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
 
 @Service
 @StepScope
-public class Sccc1101R01 extends KeyBasedStreamReader<String, BtEodTxnImport>{
+public class Sccc1101R01 extends AbstractKeyBasedStreamReader<String, BtEodTxnImport>{
 	
 	@PersistenceContext
 	private EntityManager em;

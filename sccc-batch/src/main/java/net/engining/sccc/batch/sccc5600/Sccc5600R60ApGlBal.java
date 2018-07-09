@@ -14,7 +14,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import net.engining.pcx.cc.infrastructure.shared.model.ApGlBal;
 import net.engining.pcx.cc.infrastructure.shared.model.QApGlBal;
-import net.engining.pg.batch.sdk.KeyBasedStreamReader;
+import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
 
 /**
  * 读取总账表数据
@@ -23,7 +23,7 @@ import net.engining.pg.batch.sdk.KeyBasedStreamReader;
  */
 @Service
 @StepScope
-public class Sccc5600R60ApGlBal extends KeyBasedStreamReader<Integer, ApGlBal> {
+public class Sccc5600R60ApGlBal extends AbstractKeyBasedStreamReader<Integer, ApGlBal> {
 	
 	@PersistenceContext
 	private EntityManager em;

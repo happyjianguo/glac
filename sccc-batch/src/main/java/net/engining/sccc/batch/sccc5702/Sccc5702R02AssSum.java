@@ -12,14 +12,14 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import net.engining.pcx.cc.infrastructure.shared.model.ApGlVolDtlAssSum;
 import net.engining.pcx.cc.infrastructure.shared.model.QApGlVolDtlAssSum;
-import net.engining.pg.batch.sdk.KeyBasedStreamReader;
+import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
 /**
  * 读取当日辅助汇总表
  * @author wanglidong
  */
 @Service
 @StepScope
-public class Sccc5702R02AssSum extends KeyBasedStreamReader<Integer, ApGlVolDtlAssSum>{
+public class Sccc5702R02AssSum extends AbstractKeyBasedStreamReader<Integer, ApGlVolDtlAssSum>{
 	@PersistenceContext
 	private EntityManager em;
 	

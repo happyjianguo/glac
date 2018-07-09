@@ -14,11 +14,11 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import net.engining.pcx.cc.infrastructure.shared.model.CactAccountTem;
 import net.engining.pcx.cc.infrastructure.shared.model.QCactAccountTem;
-import net.engining.pg.batch.sdk.KeyBasedStreamReader;
+import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
 
 @Service
 @StepScope
-public class Sccc0820R02CactAccountTem extends KeyBasedStreamReader<Integer, CactAccountTem>{
+public class Sccc0820R02CactAccountTem extends AbstractKeyBasedStreamReader<Integer, CactAccountTem>{
 
 	@Value("#{new java.util.Date(jobParameters['bizDate'].time)}")
 	private Date bizDate;

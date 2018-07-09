@@ -22,11 +22,11 @@ import net.engining.pcx.cc.infrastructure.shared.model.GlTransOprHst;
 import net.engining.pcx.cc.infrastructure.shared.model.QApGlVolDtl;
 import net.engining.pcx.cc.infrastructure.shared.model.QGlTransOprHst;
 import net.engining.pcx.cc.param.model.enums.PostGlInd;
-import net.engining.pg.batch.sdk.KeyBasedStreamReader;
+import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
 
 @Service
 @StepScope
-public class Sccc5800R01Trans extends KeyBasedStreamReader<String, ApGlVolDtl> {
+public class Sccc5800R01Trans extends AbstractKeyBasedStreamReader<String, ApGlVolDtl> {
 	@PersistenceContext
 	private EntityManager em;
 	@Value("#{new java.util.Date(jobParameters['batchDate'].time)}")

@@ -1,6 +1,5 @@
 package net.engining.sccc.batch.sccc9999;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,13 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import net.engining.pcx.cc.infrastructure.shared.model.QApGlTxn;
 import net.engining.pcx.cc.param.model.enums.PostGlInd;
-import net.engining.pg.batch.sdk.KeyBasedStreamReader;
+import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
 import net.engining.pg.support.db.querydsl.FetchResponse;
 import net.engining.pg.support.db.querydsl.Range;
 import net.engining.sccc.batch.service.DataBatchProcessService;
@@ -33,7 +31,7 @@ import net.engining.sccc.config.props.BatchTaskProperties;
  */
 @Service
 @StepScope
-public class Sccc999902R extends KeyBasedStreamReader<Range, List<String>> implements InitializingBean{
+public class Sccc999902R extends AbstractKeyBasedStreamReader<Range, List<String>> implements InitializingBean{
 
 	@PersistenceContext
 	private EntityManager em;

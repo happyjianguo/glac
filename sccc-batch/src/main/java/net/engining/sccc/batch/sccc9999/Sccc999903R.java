@@ -17,14 +17,14 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import net.engining.pcx.cc.infrastructure.shared.model.QApGlVolDtl;
 import net.engining.pcx.cc.param.model.enums.PostGlInd;
-import net.engining.pg.batch.sdk.KeyBasedStreamReader;
+import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
 import net.engining.pg.support.db.querydsl.FetchResponse;
 import net.engining.pg.support.db.querydsl.Range;
 import net.engining.sccc.batch.service.DataBatchProcessService;
 import net.engining.sccc.config.props.BatchTaskProperties;
 @Service
 @StepScope
-public class Sccc999903R extends KeyBasedStreamReader<Range, List<String>> implements InitializingBean{
+public class Sccc999903R extends AbstractKeyBasedStreamReader<Range, List<String>> implements InitializingBean{
 
 	@PersistenceContext
 	private EntityManager em;

@@ -13,17 +13,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.querydsl.core.Tuple;
-import com.querydsl.jpa.impl.JPADeleteClause;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import net.engining.pcx.cc.infrastructure.shared.model.QBtDataMigrationTempdtl;
-import net.engining.pcx.cc.infrastructure.shared.model.QCactAccountTem;
-import net.engining.pg.batch.sdk.KeyBasedStreamReader;
+import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
 import net.engining.sccc.biz.bean.AccountBean;
 import net.engining.sccc.biz.service.CheckAcctSeqService;
 @Service
 @StepScope
-public class Sccc0810R01BtDataMigrationTempdtl extends KeyBasedStreamReader<String, List<AccountBean>>{
+public class Sccc0810R01BtDataMigrationTempdtl extends AbstractKeyBasedStreamReader<String, List<AccountBean>>{
 
 	@Value("#{new java.util.Date(jobParameters['bizDate'].time)}")
 	private Date bizDate;

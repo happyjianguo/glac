@@ -16,7 +16,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import net.engining.pcx.cc.infrastructure.shared.model.BtDataMigrationTempdtl;
 import net.engining.pcx.cc.infrastructure.shared.model.QBtDataMigrationTempdtl;
-import net.engining.pg.batch.sdk.KeyBasedStreamReader;
+import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
 
 /**
  * @author luxue
@@ -24,7 +24,7 @@ import net.engining.pg.batch.sdk.KeyBasedStreamReader;
  */
 @Service
 @StepScope
-public class Sccc0830R03BtDataMigrationTempdtl extends KeyBasedStreamReader<String, List<BtDataMigrationTempdtl>>{
+public class Sccc0830R03BtDataMigrationTempdtl extends AbstractKeyBasedStreamReader<String, List<BtDataMigrationTempdtl>>{
 	
 	private static final Logger log = LoggerFactory.getLogger(Sccc0830R03BtDataMigrationTempdtl.class);
 	
