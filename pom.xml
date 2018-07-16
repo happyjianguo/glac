@@ -39,12 +39,12 @@
 		<dependencies>
 			<!-- spring cloud -->
 			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-starter-parent</artifactId>
-				<version>Dalston.SR3</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
+	            <groupId>org.springframework.cloud</groupId>
+	            <artifactId>spring-cloud-dependencies</artifactId>
+	            <version>Edgware.SR4</version>
+	            <type>pom</type>
+	            <scope>import</scope>
+        	</dependency>
 
 			<!-- 自身框架依赖 -->
 			<dependency>
