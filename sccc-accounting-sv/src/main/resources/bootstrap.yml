@@ -101,5 +101,5 @@ eureka:
   client: #当eureka为高可用服务之后，服务提供者、服务消费者的注册也不能再是一个节点上，要同时注册到所有的注册中心之上
     service-url:
       defaultZone:  http://eureka1:7070/eureka/
-#      http://eureka1:7070/eureka/ #,http://eureka2:7071/eureka/,http://eureka3:7072/eureka/
+#      ,http://eureka2:7071/eureka/,http://eureka3:7072/eureka/
     
