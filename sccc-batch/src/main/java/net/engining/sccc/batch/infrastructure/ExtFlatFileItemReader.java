@@ -9,7 +9,7 @@ import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.file.FlatFileItemReader;
 
-import net.engining.pcx.cc.infrastructure.shared.enums.InspectionCd;
+import net.engining.sccc.enums.InspectionCd;
 
 /**
  * 单文件读取，可忽略异常数据并持久化

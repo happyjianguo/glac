@@ -8,9 +8,9 @@ import javax.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.engining.pcx.cc.infrastructure.shared.enums.CheckStatusDef;
-import net.engining.pcx.cc.infrastructure.shared.enums.SkipConditionTypeDef;
-import net.engining.pcx.cc.infrastructure.shared.model.CactSysChecklist;
+import net.engining.sccc.entity.enums.CheckStatusDef;
+import net.engining.sccc.entity.enums.SkipConditionTypeDef;
+import net.engining.sccc.entity.model.CactSysChecklist;
 
 /**
  * 根据条件修改系统检查项状态

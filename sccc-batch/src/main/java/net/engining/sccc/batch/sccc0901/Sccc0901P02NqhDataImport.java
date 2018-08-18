@@ -11,11 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import net.engining.pcx.cc.infrastructure.shared.model.BtNqhImport;
 import net.engining.pg.parameter.Provider4Organization;
 import net.engining.pg.support.core.exception.ErrorCode;
 import net.engining.pg.support.core.exception.ErrorMessageException;
 import net.engining.sccc.batch.sccc0901.bean.DirectPostLedgerFileInfo;
+import net.engining.sccc.entity.model.BtNqhImport;
 
 /**
  * 拿去花数据导入

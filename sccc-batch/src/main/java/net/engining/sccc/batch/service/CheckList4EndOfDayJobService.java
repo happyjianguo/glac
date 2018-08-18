@@ -9,12 +9,12 @@ import org.springframework.stereotype.Service;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import net.engining.gm.facility.SystemStatusFacility;
-import net.engining.pcx.cc.infrastructure.shared.enums.CheckStatusDef;
-import net.engining.pcx.cc.infrastructure.shared.enums.InspectionCd;
-import net.engining.pcx.cc.infrastructure.shared.model.QCactSysChecklist;
-import net.engining.pcx.cc.param.model.enums.CheckListType;
 import net.engining.pcx.cc.process.service.support.Provider7x24;
 import net.engining.sccc.batch.schedule.CheckListCriterion;
+import net.engining.sccc.entity.enums.CheckStatusDef;
+import net.engining.sccc.entity.model.QCactSysChecklist;
+import net.engining.sccc.enums.CheckListType;
+import net.engining.sccc.enums.InspectionCd;
 
 @Service
 public class CheckList4EndOfDayJobService implements CheckListCriterion {

@@ -22,9 +22,7 @@ import com.alibaba.fastjson.TypeReference;
 
 import net.engining.gm.infrastructure.enums.AgeGroupCd;
 import net.engining.pcx.cc.infrastructure.shared.enums.PostTxnTypeDef;
-import net.engining.pcx.cc.infrastructure.shared.model.BtEodTxnImport;
 import net.engining.pcx.cc.param.model.enums.SubjectAmtType;
-import net.engining.pcx.cc.param.model.enums.SysTxnCd;
 import net.engining.pg.parameter.ParameterFacility;
 import net.engining.sccc.biz.bean.PostCodeSeq;
 import net.engining.sccc.biz.bean.batchBean.EveryDayAccountingBean;
@@ -38,6 +36,7 @@ import net.engining.sccc.biz.service.ComputingPostCodeService;
 import net.engining.sccc.biz.service.ComputingTxnCdService;
 import net.engining.sccc.biz.service.SplitVolService;
 import net.engining.sccc.biz.service.params.IntTaxRate;
+import net.engining.sccc.entity.model.BtEodTxnImport;
 
 /**
  * 批量还款文件入账

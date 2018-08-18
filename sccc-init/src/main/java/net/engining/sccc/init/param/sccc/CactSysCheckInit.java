@@ -8,13 +8,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import net.engining.pcx.cc.infrastructure.shared.enums.CheckStatusDef;
-import net.engining.pcx.cc.infrastructure.shared.enums.InspectionCd;
-import net.engining.pcx.cc.infrastructure.shared.enums.SkipConditionTypeDef;
-import net.engining.pcx.cc.param.model.enums.CheckListType;
 import net.engining.pg.parameter.ParameterFacility;
 import net.engining.pg.support.init.ParameterInitializer;
 import net.engining.sccc.biz.service.params.CactSysCheck;
+import net.engining.sccc.entity.enums.CheckStatusDef;
+import net.engining.sccc.entity.enums.SkipConditionTypeDef;
+import net.engining.sccc.enums.CheckListType;
+import net.engining.sccc.enums.InspectionCd;
 
 @Service
 public class CactSysCheckInit implements ParameterInitializer {

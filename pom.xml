@@ -25,6 +25,7 @@
 
 	<modules>
 		<module>sccc-config</module>
+		<module>sccc-dict</module>
 		<module>sccc-biz-service</module>
 		<module>sccc-init</module>
 		<module>sccc-accounting-sv</module>
@@ -78,6 +79,11 @@
 			<dependency>
 				<groupId>net.engining.sccc</groupId>
 				<artifactId>sccc-config</artifactId>
+				<version>${sccc.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.engining.sccc</groupId>
+				<artifactId>sccc-dict</artifactId>
 				<version>${sccc.version}</version>
 			</dependency>
 			<dependency>

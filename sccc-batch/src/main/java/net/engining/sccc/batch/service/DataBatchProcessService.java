@@ -1,7 +1,6 @@
 package net.engining.sccc.batch.service;
 
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -14,7 +13,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import net.engining.pcx.cc.infrastructure.shared.model.QApGlTxn;
 import net.engining.pcx.cc.infrastructure.shared.model.QApGlVolDtl;
 import net.engining.pcx.cc.infrastructure.shared.model.QApGlVolDtlAss;
-import net.engining.pcx.cc.infrastructure.shared.model.QBtDataMigrationTempdtl;
 import net.engining.pcx.cc.param.model.enums.PostGlInd;
 import net.engining.pg.support.db.querydsl.FetchResponse;
 import net.engining.pg.support.db.querydsl.JPAFetchResponseBuilder;

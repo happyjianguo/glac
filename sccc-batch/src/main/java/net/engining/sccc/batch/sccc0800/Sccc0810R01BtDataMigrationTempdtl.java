@@ -15,10 +15,10 @@ import org.springframework.stereotype.Service;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import net.engining.pcx.cc.infrastructure.shared.model.QBtDataMigrationTempdtl;
 import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
 import net.engining.sccc.biz.bean.AccountBean;
 import net.engining.sccc.biz.service.CheckAcctSeqService;
+import net.engining.sccc.entity.model.QBtDataMigrationTempdtl;
 @Service
 @StepScope
 public class Sccc0810R01BtDataMigrationTempdtl extends AbstractKeyBasedStreamReader<String, List<AccountBean>>{

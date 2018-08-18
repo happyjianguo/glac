@@ -17,21 +17,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import net.engining.pcx.cc.infrastructure.shared.enums.CheckStatusDef;
-import net.engining.pcx.cc.infrastructure.shared.enums.InspectionCd;
-import net.engining.pcx.cc.infrastructure.shared.enums.SkipConditionTypeDef;
-import net.engining.pcx.cc.infrastructure.shared.enums.TxnTypeDef;
-import net.engining.pcx.cc.infrastructure.shared.model.BtEodTxnImport;
-import net.engining.pcx.cc.infrastructure.shared.model.CactSysChecklist;
-import net.engining.pcx.cc.infrastructure.shared.model.QBtEodTxnImport;
-import net.engining.pcx.cc.infrastructure.shared.model.QCactSysChecklist;
 import net.engining.pg.batch.sdk.file.FlatFileHeader;
 import net.engining.sccc.batch.service.CheckListSysService;
+import net.engining.sccc.entity.enums.TxnTypeDef;
+import net.engining.sccc.entity.model.BtEodTxnImport;
+import net.engining.sccc.entity.model.CactSysChecklist;
+import net.engining.sccc.entity.model.QBtEodTxnImport;
+import net.engining.sccc.entity.model.QCactSysChecklist;
+import net.engining.sccc.enums.InspectionCd;
 
 /**
  * 利息计提记账CheckList

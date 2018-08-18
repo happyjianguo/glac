@@ -14,13 +14,13 @@ import org.springframework.validation.annotation.Validated;
 
 import com.alibaba.fastjson.JSON;
 
-import net.engining.pcx.cc.infrastructure.shared.enums.TxnTypeDef;
-import net.engining.pcx.cc.infrastructure.shared.model.BtEodTxnImport;
 import net.engining.pg.parameter.Provider4Organization;
 import net.engining.pg.support.core.exception.ErrorCode;
 import net.engining.pg.support.core.exception.ErrorMessageException;
 import net.engining.sccc.batch.service.BizValidatorService;
 import net.engining.sccc.biz.bean.batchBean.EveryDayAccountingBean;
+import net.engining.sccc.entity.enums.TxnTypeDef;
+import net.engining.sccc.entity.model.BtEodTxnImport;
 
 @Service
 @StepScope

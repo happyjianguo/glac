@@ -3,11 +3,11 @@ package net.engining.sccc.biz.service.params;
 import java.io.Serializable;
 import java.util.Date;
 
-import net.engining.pcx.cc.infrastructure.shared.enums.CheckStatusDef;
-import net.engining.pcx.cc.infrastructure.shared.enums.InspectionCd;
-import net.engining.pcx.cc.infrastructure.shared.enums.SkipConditionTypeDef;
-import net.engining.pcx.cc.param.model.enums.CheckListType;
 import net.engining.pg.support.meta.PropertyInfo;
+import net.engining.sccc.entity.enums.CheckStatusDef;
+import net.engining.sccc.entity.enums.SkipConditionTypeDef;
+import net.engining.sccc.enums.CheckListType;
+import net.engining.sccc.enums.InspectionCd;
 
 public class CactSysCheck implements Serializable{
 

@@ -32,6 +32,10 @@
 			<groupId>net.engining.profile</groupId>
 			<artifactId>profile-sdk</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>net.engining.sccc</groupId>
+			<artifactId>sccc-dict</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

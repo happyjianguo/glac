@@ -15,11 +15,10 @@ import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import net.engining.pcx.cc.infrastructure.shared.enums.InspectionCd;
-import net.engining.pcx.cc.infrastructure.shared.model.BtImportException;
 import net.engining.pg.support.core.exception.ErrorMessageException;
+import net.engining.sccc.entity.model.BtImportException;
+import net.engining.sccc.enums.InspectionCd;
 
 /**
  * 针对批量中读取Flat文件的Step监听；

@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import net.engining.pcx.cc.infrastructure.shared.model.BtNqhImport;
-import net.engining.pcx.cc.infrastructure.shared.model.QBtNqhImport;
 import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
+import net.engining.sccc.entity.model.BtNqhImport;
+import net.engining.sccc.entity.model.QBtNqhImport;
 
 /**
  * @author luxue

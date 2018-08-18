@@ -20,13 +20,13 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import net.engining.pcx.cc.infrastructure.shared.enums.InspectionCd;
-import net.engining.pcx.cc.infrastructure.shared.model.BtZyImport;
-import net.engining.pcx.cc.infrastructure.shared.model.CactSysChecklist;
-import net.engining.pcx.cc.infrastructure.shared.model.QBtZyImport;
-import net.engining.pcx.cc.infrastructure.shared.model.QCactSysChecklist;
 import net.engining.pg.batch.sdk.file.FlatFileHeader;
 import net.engining.sccc.batch.service.CheckListSysService;
+import net.engining.sccc.entity.model.BtZyImport;
+import net.engining.sccc.entity.model.CactSysChecklist;
+import net.engining.sccc.entity.model.QBtZyImport;
+import net.engining.sccc.entity.model.QCactSysChecklist;
+import net.engining.sccc.enums.InspectionCd;
 
 /**
  * 中银直接记账，Checklist检查项更新

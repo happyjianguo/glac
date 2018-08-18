@@ -14,10 +14,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import net.engining.pcx.cc.infrastructure.shared.enums.InspectionCd;
-import net.engining.pcx.cc.infrastructure.shared.model.CactSysChecklist;
-import net.engining.pcx.cc.infrastructure.shared.model.QCactSysChecklist;
 import net.engining.pg.batch.sdk.file.FlatFileHeader;
+import net.engining.sccc.entity.model.CactSysChecklist;
+import net.engining.sccc.entity.model.QCactSysChecklist;
+import net.engining.sccc.enums.InspectionCd;
 
 /**
  * File Header 处理组件；针对只用一行String表示文件头数据；

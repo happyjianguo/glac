@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import net.engining.pcx.cc.infrastructure.shared.model.BtDataMigrationTempdtl;
-import net.engining.pcx.cc.infrastructure.shared.model.QBtDataMigrationTempdtl;
 import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
+import net.engining.sccc.entity.model.BtDataMigrationTempdtl;
+import net.engining.sccc.entity.model.QBtDataMigrationTempdtl;
 
 /**
  * @author luxue

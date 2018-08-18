@@ -18,10 +18,10 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSON;
 
 import net.engining.pcx.cc.infrastructure.shared.enums.AssistAccountingType;
-import net.engining.pcx.cc.infrastructure.shared.model.BtZyImport;
 import net.engining.pcx.cc.process.service.support.refactor.DirectAccountingEvent;
 import net.engining.sccc.biz.bean.AssistAccountData;
 import net.engining.sccc.biz.service.SplitVolService;
+import net.engining.sccc.entity.model.BtZyImport;
 
 /**
  * 中银记账文件记账

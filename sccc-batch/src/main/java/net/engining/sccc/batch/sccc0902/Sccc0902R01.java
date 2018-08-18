@@ -14,10 +14,10 @@ import org.springframework.stereotype.Service;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import net.engining.pcx.cc.infrastructure.shared.enums.TxnTypeDef;
-import net.engining.pcx.cc.infrastructure.shared.model.BtEodTxnImport;
-import net.engining.pcx.cc.infrastructure.shared.model.QBtEodTxnImport;
 import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
+import net.engining.sccc.entity.enums.TxnTypeDef;
+import net.engining.sccc.entity.model.BtEodTxnImport;
+import net.engining.sccc.entity.model.QBtEodTxnImport;
 
 /**
  * @author luxue

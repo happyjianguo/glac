@@ -17,7 +17,8 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.util.Assert;
 
-import net.engining.pcx.cc.infrastructure.shared.enums.InspectionCd;
+import net.engining.sccc.enums.InspectionCd;
+
 
 /**
  * 相同FlatFileItemReader的多文件读取，可忽略异常数据并持久化

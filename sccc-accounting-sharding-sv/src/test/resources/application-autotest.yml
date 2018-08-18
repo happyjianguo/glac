@@ -21,7 +21,7 @@ spring:
 #       配置SQL生成命名策略，不用spring默认的会转为小写；配置为保持原命名方式
         physical-strategy: net.engining.pg.support.db.naming.PhysicalNamingStrategyUppercaseImpl
     show-sql: true
-    database: mysql
+    database: h2
     properties:
       hibernate.format_sql: true
       pg.snowflake.workerId: 1

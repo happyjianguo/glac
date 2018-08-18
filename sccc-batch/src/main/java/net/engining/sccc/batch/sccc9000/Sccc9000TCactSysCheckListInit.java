@@ -17,9 +17,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import net.engining.pcx.cc.infrastructure.shared.enums.InspectionCd;
-import net.engining.pcx.cc.infrastructure.shared.model.CactSysChecklist;
 import net.engining.pg.parameter.ParameterFacility;
 import net.engining.sccc.biz.service.params.CactSysCheck;
+import net.engining.sccc.entity.model.CactSysChecklist;
 @Service
 @StepScope
 public class Sccc9000TCactSysCheckListInit implements Tasklet{

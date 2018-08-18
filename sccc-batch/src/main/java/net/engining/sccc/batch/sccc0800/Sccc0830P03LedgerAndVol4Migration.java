@@ -24,13 +24,13 @@ import net.engining.pcx.cc.infrastructure.shared.enums.PostTypeDef;
 import net.engining.pcx.cc.infrastructure.shared.enums.TxnDetailType;
 import net.engining.pcx.cc.infrastructure.shared.model.ApGlTxn;
 import net.engining.pcx.cc.infrastructure.shared.model.ApGlVolDtl;
-import net.engining.pcx.cc.infrastructure.shared.model.BtDataMigrationTempdtl;
 import net.engining.pcx.cc.infrastructure.shared.model.QApGlTxn;
 import net.engining.pcx.cc.infrastructure.shared.model.QCactAccount;
 import net.engining.pcx.cc.infrastructure.shared.model.QCactAccountAddi;
 import net.engining.pcx.cc.param.model.enums.PostGlInd;
 import net.engining.pg.parameter.Provider4Organization;
 import net.engining.sccc.biz.service.CheckAcctSeqService;
+import net.engining.sccc.entity.model.BtDataMigrationTempdtl;
 
 /**
  * 数据迁移 分别落总账流水和分录流水
@@ -127,7 +127,7 @@ public class Sccc0830P03LedgerAndVol4Migration implements ItemProcessor<List<BtD
 				apGlVolDtl.setBranch(btDataMigrationTempdtl.getBranch());
 				apGlVolDtl.setTxnBrcd(btDataMigrationTempdtl.getBranch());
 				apGlVolDtl.setPostGlInd(PostGlInd.Normal);
-				apGlVolDtl.setInOutFlag(btDataMigrationTempdtl.getInOutFlag());
+//				apGlVolDtl.setInOutFlag(btDataMigrationTempdtl.getInOutFlag());
 				apGlVolDtl.setCurrCd(btDataMigrationTempdtl.getCurrCd());
 				apGlVolDtl.setDbsubjectCd(btDataMigrationTempdtl.getDbsubjectCd());
 				apGlVolDtl.setCrsubjectCd(btDataMigrationTempdtl.getCrsubjectCd());

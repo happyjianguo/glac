@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.engining.pcx.cc.infrastructure.shared.enums.InspectionCd;
-import net.engining.pcx.cc.infrastructure.shared.model.CactSysChecklist;
 import net.engining.pcx.cc.param.model.enums.CheckListType;
 import net.engining.pg.parameter.ParameterFacility;
 import net.engining.sccc.biz.service.params.CactSysCheck;
+import net.engining.sccc.entity.model.CactSysChecklist;
 
 @Service
 public class CactSysCheckListService {

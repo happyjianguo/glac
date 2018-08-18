@@ -17,7 +17,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import net.engining.pcx.cc.infrastructure.shared.enums.CheckAccountStatusDef;
 import net.engining.pcx.cc.infrastructure.shared.enums.TxnDetailType;
-import net.engining.pcx.cc.infrastructure.shared.model.BtEodTxnImport;
 import net.engining.pcx.cc.infrastructure.shared.model.CactSeqError;
 import net.engining.pcx.cc.infrastructure.shared.model.CactTxnPost;
 import net.engining.pcx.cc.infrastructure.shared.model.QCactTxnPost;
@@ -26,6 +25,7 @@ import net.engining.sccc.biz.bean.PostCodeSeq;
 import net.engining.sccc.biz.bean.batchBean.DataTransBean;
 import net.engining.sccc.biz.bean.batchBean.EveryDayAccountingBean;
 import net.engining.sccc.biz.service.DataComplementationService;
+import net.engining.sccc.entity.model.BtEodTxnImport;
 
 @Service
 @StepScope
